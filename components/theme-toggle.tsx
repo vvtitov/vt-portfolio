@@ -14,31 +14,37 @@ export function ThemeToggle() {
     setMounted(true)
   }, [])
 
-  if (!mounted) {
-    return null
-  }
+  // Determinar el tema predeterminado basado en las preferencias del sistema
+  const prefersDarkMode = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+  const defaultTheme = prefersDarkMode ? "dark" : "light"
+  
+  // Usar el tema real si está montado, o el tema predeterminado si no
+  const currentTheme = mounted ? theme : defaultTheme
 
   return (
     <Button
       variant="link"
       size="icon"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
       aria-label="Toggle theme"
+      className="opacity-100"
     >
       <motion.div
-        animate={{ rotate: theme === "dark" ? 0 : 180 }}
+        animate={{ rotate: currentTheme === "dark" ? 0 : 180 }}
         transition={{ duration: 0.5, type: "spring" }}
         className="relative h-5 w-5"
       >
         <motion.div
-          animate={{ opacity: theme === "dark" ? 1 : 0 }}
+          animate={{ opacity: currentTheme === "dark" ? 1 : 0 }}
+          initial={{ opacity: currentTheme === "dark" ? 1 : 0 }}
           transition={{ duration: 0.25 }}
           className="absolute inset-0"
         >
           <Moon className="h-5 w-5" />
         </motion.div>
         <motion.div
-          animate={{ opacity: theme === "light" ? 1 : 0 }}
+          animate={{ opacity: currentTheme === "light" ? 1 : 0 }}
+          initial={{ opacity: currentTheme === "light" ? 1 : 0 }}
           transition={{ duration: 0.25 }}
           className="absolute inset-0"
         >
@@ -48,4 +54,3 @@ export function ThemeToggle() {
     </Button>
   )
 }
-

@@ -45,7 +45,7 @@ export default function Home() {
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center p-4 md:p-10">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-4xl md:text-6xl lg:text-6xl font-bold text-foreground tracking-normal">
+              <h1 className="text-3xl md:text-6xl lg:text-6xl font-bold text-foreground tracking-normal">
                 <AnimatedText text="Hi! I'm Vladislav Titov 👋🏼" />
               </h1>
               <h2 className="text-xl md:text-4xl lg:text-4xl font-semibold text-foreground mb-6 tracking-wide">
@@ -84,12 +84,12 @@ export default function Home() {
         </div>
 
         <motion.div
-          className="absolute bottom-10 left-1/2 -translate-x-1/2"
+          className="absolute bottom-32 flex mx-auto"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
         >
-          <div className="w-6 h-10 rounded-full border-2 border-white flex justify-center items-start p-1">
-            <div className="w-1 h-2 bg-white rounded-full" />
+          <div className="w-6 h-8 rounded-full border-2 border-black dark:border-white flex justify-center items-start p-1">
+            <div className="w-1 h-2 bg-black dark:bg-white rounded-full" />
           </div>
         </motion.div>
       </section>

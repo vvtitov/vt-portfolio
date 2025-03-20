@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { Menu, X } from "lucide-react"
+import { ArrowDownRight, ArrowRight, Github, Linkedin, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 
@@ -163,11 +163,11 @@ export function Navbar() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
+              className="flex flex-col sm:flex-row gap-4 justify-left"
             >
-              <Button asChild>
-                <Link href={getHref("contact")}>Hire Me</Link>
+              <Button asChild variant="link" className="flex items-center">
+                <Link href="#">Download PDF <ArrowDownRight className="w-5 h-5 hover:rotate-180" /></Link>
               </Button>
             </motion.div>
           </nav>
@@ -252,9 +252,15 @@ export function Navbar() {
               >
                 Contact
               </Link>
-              <div className="pt-6">
-                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu}>
-                  <Link href={getHref("contact")}>Hire Me</Link>
+              <div className="grid grid-cols-3 gap-2 pt-6 justify-center items-center mx-auto">
+                <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
+                  <Link href={getHref("contact")}><Linkedin className="w-5 h-5" /></Link>
+                </Button>
+                <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
+                  <Link href={getHref("contact")}><Github className="w-5 h-5" /></Link>
+                </Button>
+                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
+                  <Link href={getHref("contact")}>PDF <ArrowDownRight className="w-7 h-7" /></Link>
                 </Button>
               </div>
             </nav>
