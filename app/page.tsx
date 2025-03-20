@@ -45,9 +45,12 @@ export default function Home() {
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center p-4 md:p-10">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-4xl md:text-6xl lg:text-6xl font-bold text-foreground mb-6 tracking-tight">
-                <AnimatedText text="Front End Developer" />
+              <h1 className="text-2xl md:text-6xl lg:text-6xl font-bold text-foreground tracking-tight">
+                <AnimatedText text="Hi! I'm Vladislav Titov 👋🏼" />
               </h1>
+              <h2 className="text-xl md:text-4xl lg:text-4xl font-semibold text-foreground mb-6 tracking-wide">
+                <AnimatedText text="Front End Developer" />
+              </h2>
             </motion.div>
 
             <motion.div
@@ -73,7 +76,7 @@ export default function Home() {
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-secondary-foreground text-foreground hover:bg-white/10">
+              <Button asChild size="lg" variant="outline" className="border-secondary-foreground text-foreground hover:bg-white/10 bg-secondary/20">
                 <Link href="#contact">Get in Touch</Link>
               </Button>
             </motion.div>
@@ -215,7 +218,7 @@ export default function Home() {
       </section>
 
       {/* Experience Section */}
-      <section id="experience" className="py-24 md:py-32 bg-muted/30">
+      <section id="experience" className="py-12 md:pt-32 bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <motion.div

@@ -15,6 +15,18 @@ export function Navbar() {
   const pathname = usePathname()
   const isHomePage = pathname === "/"
 
+  // Prevenir scroll cuando el menú móvil está abierto
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 10) {
@@ -50,7 +62,7 @@ export function Navbar() {
   }
 
   // Generate the appropriate href for navigation links
-  const getHref = (section) => {
+  const getHref = (section: string) => {
     return isHomePage ? `#${section}` : `/#${section}`
   }
 
@@ -64,7 +76,7 @@ export function Navbar() {
         <div className="flex items-center justify-between">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
             <Link href="/" className="text-2xl font-bold">
-              <span className="text-primary">Vladislav</span> Titov
+              <span className="text-primary">VT</span>
             </Link>
           </motion.div>
 
@@ -163,7 +175,11 @@ export function Navbar() {
           {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-4">
             <ThemeToggle />
-            <button className="focus:outline-none" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
+            <button 
+              className="focus:outline-none z-50 relative" 
+              onClick={() => setIsMenuOpen(!isMenuOpen)} 
+              aria-label="Toggle menu"
+            >
               {isMenuOpen ? <X className="h-6 w-6 hover:rotate-3" /> : <Menu className="h-6 w-6 hover:rotate-3" />}
             </button>
           </div>
@@ -174,17 +190,17 @@ export function Navbar() {
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: "auto" }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md shadow-md"
+            className="md:hidden fixed inset-0 bg-background z-40 flex items-center justify-center"
           >
-            <nav className="container mx-auto px-4 py-6 flex flex-col space-y-4">
+            <nav className="container mx-auto px-4 py-6 flex flex-col space-y-6">
               <Link
                 href={getHref("about")}
-                className={`text-foreground text-sm hover:text-primary transition-colors py-2 ${
-                  activeSection === "about" && isHomePage ? "text-primary font-medium" : ""
+                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
+                  activeSection === "about" && isHomePage ? "text-primary font-bold" : ""
                 }`}
                 onClick={closeMenu}
               >
@@ -192,8 +208,8 @@ export function Navbar() {
               </Link>
               <Link
                 href={getHref("experience")}
-                className={`text-foreground text-sm hover:text-primary transition-colors py-2 ${
-                  activeSection === "experience" && isHomePage ? "text-primary font-medium" : ""
+                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
+                  activeSection === "experience" && isHomePage ? "text-primary font-bold" : ""
                 }`}
                 onClick={closeMenu}
               >
@@ -201,8 +217,8 @@ export function Navbar() {
               </Link>
               <Link
                 href={getHref("skills")}
-                className={`text-foreground text-sm hover:text-primary transition-colors py-2 ${
-                  activeSection === "skills" && isHomePage ? "text-primary font-medium" : ""
+                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
+                  activeSection === "skills" && isHomePage ? "text-primary font-bold" : ""
                 }`}
                 onClick={closeMenu}
               >
@@ -210,8 +226,8 @@ export function Navbar() {
               </Link>
               <Link
                 href={getHref("projects")}
-                className={`text-foreground text-sm hover:text-primary transition-colors py-2 ${
-                  activeSection === "projects" && isHomePage ? "text-primary font-medium" : ""
+                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
+                  activeSection === "projects" && isHomePage ? "text-primary font-bold" : ""
                 }`}
                 onClick={closeMenu}
               >
@@ -219,8 +235,8 @@ export function Navbar() {
               </Link>
               <Link
                 href={getHref("testimonials")}
-                className={`text-foreground text-sm hover:text-primary transition-colors py-2 ${
-                  activeSection === "testimonials" && isHomePage ? "text-primary font-medium" : ""
+                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
+                  activeSection === "testimonials" && isHomePage ? "text-primary font-bold" : ""
                 }`}
                 onClick={closeMenu}
               >
@@ -228,16 +244,18 @@ export function Navbar() {
               </Link>
               <Link
                 href={getHref("contact")}
-                className={`text-foreground text-sm hover:text-primary transition-colors py-2 ${
-                  activeSection === "contact" && isHomePage ? "text-primary font-medium" : ""
+                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
+                  activeSection === "contact" && isHomePage ? "text-primary font-bold" : ""
                 }`}
                 onClick={closeMenu}
               >
                 Contact
               </Link>
-              <Button asChild className="w-full" onClick={closeMenu}>
-                <Link href={getHref("contact")}>Hire Me</Link>
-              </Button>
+              <div className="pt-6">
+                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu}>
+                  <Link href={getHref("contact")}>Hire Me</Link>
+                </Button>
+              </div>
             </nav>
           </motion.div>
         )}
