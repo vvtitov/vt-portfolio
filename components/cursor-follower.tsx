@@ -8,8 +8,18 @@ export function CursorFollower() {
   const [isVisible, setIsVisible] = useState(false)
 
   useEffect(() => {
-    // Only show custom cursor on desktop
-    if (window.innerWidth > 768) {
+    // Función para detectar si es un dispositivo móvil
+    const isMobileDevice = () => {
+      return (
+        typeof window !== "undefined" && 
+        (window.innerWidth <= 768 || 
+         navigator.maxTouchPoints > 0 || 
+         /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+      )
+    }
+
+    // Solo mostrar cursor personalizado en escritorio
+    if (!isMobileDevice()) {
       setIsVisible(true)
 
       const handleMouseMove = (e: MouseEvent) => {
@@ -51,4 +61,3 @@ export function CursorFollower() {
     </>
   )
 }
-
