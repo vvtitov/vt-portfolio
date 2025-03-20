@@ -7,6 +7,7 @@ import { Footer } from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { CursorFollower } from "@/components/cursor-follower"
+import { MenuProvider } from "@/context/menu-context"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -48,11 +49,13 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <CursorFollower />
-          <Navbar />
-          {children}
-          <Footer />
-          <Toaster />
+          <MenuProvider>
+            <CursorFollower />
+            <Navbar />
+            {children}
+            <Footer />
+            <Toaster />
+          </MenuProvider>
         </ThemeProvider>
       </body>
     </html>

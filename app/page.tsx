@@ -11,7 +11,6 @@ import { SkillBar } from "@/components/skill-bar"
 import { ContactForm } from "@/components/contact-form"
 import { AnimatedCounter } from "@/components/animated-counter"
 import { AnimatedText } from "@/components/animated-text"
-import { CursorFollower } from "@/components/cursor-follower"
 import { ExperienceTimeline } from "@/components/experience-timeline"
 import { ProjectFilter } from "@/components/project-filter"
 import { ScrollToTop } from "@/components/scroll-to-top"
@@ -32,7 +31,6 @@ export default function Home() {
 
   return (
     <main className="relative">
-      <CursorFollower />
       <ScrollToTop />
 
       {/* Hero Section */}
@@ -579,4 +577,3 @@ export default function Home() {
     </main>
   )
 }
-

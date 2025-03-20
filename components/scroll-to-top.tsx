@@ -4,9 +4,11 @@ import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { ArrowUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useMenu } from "@/context/menu-context"
 
 export function ScrollToTop() {
   const [isVisible, setIsVisible] = useState(false)
+  const { isMenuOpen } = useMenu()
 
   useEffect(() => {
     const toggleVisibility = () => {
@@ -30,7 +32,7 @@ export function ScrollToTop() {
 
   return (
     <AnimatePresence>
-      {isVisible && (
+      {isVisible && !isMenuOpen && (
         <motion.div
           className="fixed bottom-8 right-8 z-50"
           initial={{ opacity: 0, scale: 0.5 }}
@@ -46,4 +48,3 @@ export function ScrollToTop() {
     </AnimatePresence>
   )
 }
-

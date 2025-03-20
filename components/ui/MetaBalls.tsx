@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Renderer,
   Program,
@@ -11,6 +11,7 @@ import {
 import { useTheme } from "next-themes";
 
 type MetaBallsProps = {
+  color?: string;
   speed?: number;
   enableMouseInteraction?: boolean;
   hoverSmoothness?: number;
@@ -18,6 +19,7 @@ type MetaBallsProps = {
   ballCount?: number;
   clumpFactor?: number;
   cursorBallSize?: number;
+  cursorBallColor?: string;
   enableTransparency?: boolean;
 };
 
@@ -128,21 +130,21 @@ type BallParams = {
 };
 
 const MetaBalls: React.FC<MetaBallsProps> = ({
-  speed = 0.7,
+  color = "#ffffff",
+  speed = 0.6,
   enableMouseInteraction = true,
   hoverSmoothness = 0.3,
-  animationSize = 30,
-  ballCount = 2,
+  animationSize = 20,
+  ballCount = 10,
   clumpFactor = 1,
   cursorBallSize = 2,
-  enableTransparency = true, // Siempre transparente por defecto
+  cursorBallColor = "#ffffff",
+  enableTransparency = true,
 }) => {
-  const containerRef = useRef<HTMLDivElement>(null);
   const { theme } = useTheme();
-  
-  // Colores basados en el tema
-  const color = theme === 'dark' ? "#ffffff" : "#000000";
-  const cursorBallColor = theme === 'dark' ? "#ffffff" : "#000000";
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isPointerInside, setIsPointerInside] = useState(false);
 
   useEffect(() => {
     const container = containerRef.current;
@@ -155,7 +157,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       premultipliedAlpha: false,
     });
     const gl = renderer.gl;
-    gl.clearColor(0, 0, 0, 0); // Siempre transparente
+    gl.clearColor(0, 0, 0, enableTransparency ? 0 : 1);
     container.appendChild(gl.canvas);
 
     const camera = new Camera(gl, {
@@ -169,8 +171,9 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     camera.position.z = 1;
 
     const geometry = new Triangle(gl);
-    const [r1, g1, b1] = parseHexColor(color);
-    const [r2, g2, b2] = parseHexColor(cursorBallColor);
+    const isLightMode = theme === "light";
+    const [r1, g1, b1] = isLightMode ? parseHexColor("#000000") : parseHexColor(color);
+    const [r2, g2, b2] = isLightMode ? parseHexColor("#000000") : parseHexColor(cursorBallColor);
 
     const metaBallsUniform: Vec3[] = [];
     for (let i = 0; i < 50; i++) {
@@ -191,7 +194,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         iCursorBallSize: { value: cursorBallSize },
         iMetaBalls: { value: metaBallsUniform },
         iClumpFactor: { value: clumpFactor },
-        enableTransparency: { value: true }, // Siempre transparente
+        enableTransparency: { value: enableTransparency },
       },
     });
 
@@ -218,10 +221,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     let pointerInside = false;
     let pointerX = 0;
     let pointerY = 0;
-    let scrollY = 0;
-    let lastScrollY = 0;
-    let scrollVelocity = 0;
-    let isMobile = window.innerWidth < 768;
 
     function resize() {
       if (!container) return;
@@ -235,7 +234,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         gl.canvas.height,
         0,
       );
-      isMobile = window.innerWidth < 768;
     }
     window.addEventListener("resize", resize);
     resize();
@@ -247,25 +245,23 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       const py = e.clientY - rect.top;
       pointerX = (px / rect.width) * gl.canvas.width;
       pointerY = (1 - py / rect.height) * gl.canvas.height;
+      
+      // Actualizar la posición del mouse para el texto
+      setMousePosition({ x: e.clientX, y: e.clientY });
     }
     function onPointerEnter() {
       if (!enableMouseInteraction) return;
       pointerInside = true;
+      setIsPointerInside(true);
     }
     function onPointerLeave() {
       if (!enableMouseInteraction) return;
       pointerInside = false;
+      setIsPointerInside(false);
     }
-    
-    // Manejar el evento de scroll
-    function handleScroll() {
-      scrollY = window.scrollY;
-    }
-    
     container.addEventListener("pointermove", onPointerMove);
     container.addEventListener("pointerenter", onPointerEnter);
     container.addEventListener("pointerleave", onPointerLeave);
-    window.addEventListener("scroll", handleScroll);
 
     const startTime = performance.now();
     let animationFrameId: number;
@@ -273,10 +269,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       animationFrameId = requestAnimationFrame(update);
       const elapsed = (t - startTime) * 0.001;
       program.uniforms.iTime.value = elapsed;
-      
-      // Calcular la velocidad de scroll
-      scrollVelocity = scrollY - lastScrollY;
-      lastScrollY = scrollY;
 
       for (let i = 0; i < effectiveBallCount; i++) {
         const p = ballParams[i];
@@ -284,15 +276,8 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         const th = p.st + dt;
         const x = Math.cos(th);
         const y = Math.sin(th + dt * p.toggle);
-        
-        // Aplicar efecto de scroll en dispositivos móviles
-        let scrollEffect = 0;
-        if (isMobile) {
-          scrollEffect = scrollVelocity * 0.01 * (i % 2 === 0 ? 1 : -1);
-        }
-        
-        const posX = x * p.baseScale * clumpFactor + scrollEffect;
-        const posY = y * p.baseScale * clumpFactor + scrollEffect;
+        const posX = x * p.baseScale * clumpFactor;
+        const posY = y * p.baseScale * clumpFactor;
         metaBallsUniform[i].set(posX, posY, p.radius);
       }
 
@@ -300,13 +285,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       if (pointerInside) {
         targetX = pointerX;
         targetY = pointerY;
-      } else if (isMobile) {
-        // En móviles, usar la posición de scroll para animar cuando no hay interacción de puntero
-        const cx = gl.canvas.width * 0.5;
-        const cy = gl.canvas.height * 0.5;
-        const scrollOffset = scrollY * 0.1;
-        targetX = cx + Math.cos(elapsed * speed + scrollOffset) * (gl.canvas.width * 0.1);
-        targetY = cy + Math.sin(elapsed * speed + scrollOffset) * (gl.canvas.height * 0.1);
       } else {
         const cx = gl.canvas.width * 0.5;
         const cy = gl.canvas.height * 0.5;
@@ -315,7 +293,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         targetX = cx + Math.cos(elapsed * speed) * rx;
         targetY = cy + Math.sin(elapsed * speed) * ry;
       }
-      
       mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
       mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
       program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
@@ -327,7 +304,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", resize);
-      window.removeEventListener("scroll", handleScroll);
       container.removeEventListener("pointermove", onPointerMove);
       container.removeEventListener("pointerenter", onPointerEnter);
       container.removeEventListener("pointerleave", onPointerLeave);
@@ -335,7 +311,6 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, [
-    theme, // Añadido theme para que se actualice cuando cambie el tema
     color,
     cursorBallColor,
     speed,
@@ -346,9 +321,27 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     clumpFactor,
     cursorBallSize,
     enableTransparency,
+    theme,
   ]);
 
-  return <div ref={containerRef} className="w-full h-full relative" />;
+  return (
+    <div ref={containerRef} className="w-full h-full relative">
+      {isPointerInside && (
+        <div 
+          className={`fixed pointer-events-none text-xs font-bold z-50 ${theme === "light" ? "text-black" : "text-white"}`}
+          style={{
+            left: `${mousePosition.x + 25}px`,
+            top: `${mousePosition.y - 15}px`,
+            textShadow: '0 0 3px rgba(0,0,0,0.8)',
+            transform: 'rotate(-5deg)',
+            transition: 'transform 0.1s ease-out'
+          }}
+        >
+          woops!
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default MetaBalls;

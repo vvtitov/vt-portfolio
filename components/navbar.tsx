@@ -7,10 +7,13 @@ import { motion, AnimatePresence } from "framer-motion"
 import { ArrowDownRight, ArrowRight, Github, Linkedin, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { useMenu } from "@/context/menu-context"
 
 export function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { isMenuOpen, setIsMenuOpen } = useMenu()
   const [isScrolled, setIsScrolled] = useState(false)
+  const [isVisible, setIsVisible] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
   const [activeSection, setActiveSection] = useState("home")
   const pathname = usePathname()
   const isHomePage = pathname === "/"
@@ -29,11 +32,29 @@ export function Navbar() {
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 10) {
-        setIsScrolled(true)
+      const currentScrollY = window.scrollY;
+      
+      // Determinar si está scrolleado
+      if (currentScrollY > 10) {
+        setIsScrolled(true);
       } else {
-        setIsScrolled(false)
+        setIsScrolled(false);
       }
+      
+      // Determinar dirección del scroll y visibilidad
+      if (currentScrollY < 10) {
+        // Siempre visible en la parte superior
+        setIsVisible(true);
+      } else if (currentScrollY < lastScrollY) {
+        // Scrolleando hacia arriba - mostrar navbar
+        setIsVisible(true);
+      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        // Scrolleando hacia abajo y no en la parte superior - ocultar navbar
+        setIsVisible(false);
+      }
+      
+      // Actualizar la posición del último scroll
+      setLastScrollY(currentScrollY);
 
       // Only update active section on home page
       if (isHomePage) {
@@ -55,7 +76,7 @@ export function Navbar() {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [isHomePage])
+  }, [isHomePage, lastScrollY])
 
   const closeMenu = () => {
     setIsMenuOpen(false)
@@ -70,7 +91,7 @@ export function Navbar() {
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"
-      }`}
+      } ${isVisible && !isMenuOpen ? "translate-y-0" : isMenuOpen ? "translate-y-0" : "-translate-y-full"}`}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
@@ -194,10 +215,10 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden fixed top-0 left-0 w-full h-screen bg-background/95 backdrop-blur-md z-[100] flex items-center justify-center overflow-hidden"
+            className="md:hidden fixed top-0 left-0 w-full h-screen bg-background/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center overflow-hidden"
             style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
           >
-            <nav className="container mx-auto px-4 py-6 flex flex-col space-y-6">
+            <nav className="container mx-auto flex flex-col space-y-4">
               <Link
                 href={getHref("about")}
                 className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
@@ -252,18 +273,18 @@ export function Navbar() {
               >
                 Contact
               </Link>
-              <div className="grid grid-cols-3 gap-2 pt-6 justify-center items-center mx-auto">
-                <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
-                  <Link href={getHref("contact")}><Linkedin className="w-5 h-5" /></Link>
-                </Button>
-                <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
-                  <Link href={getHref("contact")}><Github className="w-5 h-5" /></Link>
-                </Button>
-                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
-                  <Link href={getHref("contact")}>PDF <ArrowDownRight className="w-7 h-7" /></Link>
-                </Button>
-              </div>
             </nav>
+            <div className="grid grid-cols-3 gap-2 pt-6 justify-center items-center mx-auto">
+              <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
+                <Link href={getHref("contact")}><Linkedin className="w-5 h-5" /></Link>
+              </Button>
+              <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
+                <Link href={getHref("contact")}><Github className="w-5 h-5" /></Link>
+              </Button>
+              <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
+                <Link href={getHref("contact")}>PDF <ArrowDownRight className="w-7 h-7" /></Link>
+              </Button>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
