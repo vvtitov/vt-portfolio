@@ -176,7 +176,7 @@ export function Navbar() {
           <div className="md:hidden flex items-center space-x-4">
             <ThemeToggle />
             <button 
-              className="focus:outline-none z-50 relative" 
+              className="focus:outline-none z-[101] relative" 
               onClick={() => setIsMenuOpen(!isMenuOpen)} 
               aria-label="Toggle menu"
             >
@@ -194,7 +194,8 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden fixed inset-0 bg-background z-40 flex items-center justify-center"
+            className="md:hidden fixed top-0 left-0 w-full h-screen bg-background/95 backdrop-blur-md z-[100] flex items-center justify-center overflow-hidden"
+            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
           >
             <nav className="container mx-auto px-4 py-6 flex flex-col space-y-6">
               <Link

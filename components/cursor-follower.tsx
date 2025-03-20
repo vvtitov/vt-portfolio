@@ -36,9 +36,9 @@ export function CursorFollower() {
         }}
         transition={{
           type: "spring",
-          damping: 25,
-          stiffness: 300,
-          mass: 0.5,
+          damping: 20,
+          stiffness: 1200,
+          mass: 0.1,
         }}
       />
       <motion.div

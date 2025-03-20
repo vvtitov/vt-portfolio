@@ -128,12 +128,12 @@ type BallParams = {
 };
 
 const MetaBalls: React.FC<MetaBallsProps> = ({
-  speed = 1.2,
-  enableMouseInteraction = false,
+  speed = 0.7,
+  enableMouseInteraction = true,
   hoverSmoothness = 0.3,
   animationSize = 30,
   ballCount = 10,
-  clumpFactor = 1,
+  clumpFactor = 3,
   cursorBallSize = 2,
   enableTransparency = true, // Siempre transparente por defecto
 }) => {
