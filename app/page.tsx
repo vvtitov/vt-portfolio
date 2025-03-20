@@ -180,7 +180,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
+              <div className="flex gap-4 items-center justify-center">
                 <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
                   <Button variant="outline" size="icon" asChild>
                     <Link href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
@@ -262,7 +262,9 @@ export default function Home() {
                 </Link>
               </Button>
             </motion.div>
-            <MetaBalls/>
+            <div className="hidden md:block">
+              <MetaBalls/>
+            </div>
           </div>
         </div>
       </section>
