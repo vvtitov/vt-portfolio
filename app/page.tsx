@@ -46,7 +46,7 @@ export default function Home() {
               <h1 className="text-3xl md:text-6xl lg:text-6xl font-bold text-foreground tracking-normal">
                 <AnimatedText text="Hi! I'm Vladislav Titov 👋🏼" />
               </h1>
-              <h2 className="text-xl md:text-4xl lg:text-4xl font-semibold text-foreground mb-6 tracking-wide">
+              <h2 className="text-xl md:text-4xl lg:text-4xl font-semibold text-foreground mb-6 tracking-wide line-clamp-6">
                 <AnimatedText text="Front End Developer" />
               </h2>
             </motion.div>
