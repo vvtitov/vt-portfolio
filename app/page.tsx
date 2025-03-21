@@ -180,7 +180,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="flex gap-4 items-center justify-center">
+              <div className="flex gap-4 items-center justify-center md:justify-start">
                 <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
                   <Button variant="outline" size="icon" asChild>
                     <Link href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">

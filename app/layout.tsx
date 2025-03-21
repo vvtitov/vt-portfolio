@@ -13,9 +13,8 @@ const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
 })
-
 export const metadata: Metadata = {
-  title: "Vladislav | Developer",
+  title: "VT | Portfolio",
   description:
     "Portfolio of a creative developer and designer specializing in building engaging digital experiences with modern web technologies.",
   keywords: ["developer", "designer", "portfolio", "web development", "frontend", "UI/UX", "React", "Next.js"],
@@ -38,6 +37,10 @@ export const metadata: Metadata = {
       },
     ],
   },
+  icons: {
+    icon: "/favicon.ico",
+  },
+  manifest: "/manifest.json",
 }
 
 export default function RootLayout({

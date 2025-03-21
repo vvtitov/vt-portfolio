@@ -4,10 +4,12 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowDownRight, ArrowRight, Github, Linkedin, Menu, X } from "lucide-react"
+import { ArrowDownRight, ArrowRight, Download, Github, Linkedin, Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useMenu } from "@/context/menu-context"
+import Image from "next/image"
+import Logo from "./logo"
 
 export function Navbar() {
   const { isMenuOpen, setIsMenuOpen } = useMenu()
@@ -97,7 +99,7 @@ export function Navbar() {
         <div className="flex items-center justify-between">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
             <Link href="/" className="text-2xl font-bold">
-              <span className="text-primary">VT</span>
+              <Logo />
             </Link>
           </motion.div>
 
@@ -184,11 +186,12 @@ export function Navbar() {
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              whileTap={{ scale: 0.95 }}
-              className="flex flex-col sm:flex-row gap-4 justify-left"
             >
-              <Button asChild variant="link" className="flex items-center">
-                <Link href="#">Download PDF <ArrowDownRight className="w-5 h-5 hover:rotate-180" /></Link>
+              <Button asChild variant="outline" className="border-foreground bg-background/20 z-20 hover:bg-background/30">
+                <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center">
+                  PDF Resume
+                  <Download className="ml-2 h-4 w-4" />
+                </Link>
               </Button>
             </motion.div>
           </nav>
