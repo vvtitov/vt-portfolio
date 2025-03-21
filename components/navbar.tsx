@@ -63,7 +63,20 @@ export function Navbar() {
         // Update active section based on scroll position
         const sections = ["home", "about", "experience", "skills", "projects", "testimonials", "contact"]
 
+        // Verificar primero si estamos en la sección "home" (hero)
+        const homeElement = document.getElementById("home")
+        if (homeElement) {
+          const homeRect = homeElement.getBoundingClientRect()
+          // Si la parte superior de la sección home está visible y cerca del borde superior
+          if (homeRect.top <= 100 && homeRect.bottom > window.innerHeight / 2) {
+            setActiveSection("home")
+            return
+          }
+        }
+
+        // Si no estamos en home, verificar las demás secciones
         for (const section of sections.reverse()) {
+          if (section === "home") continue; // Ya verificamos home arriba
           const element = document.getElementById(section)
           if (element) {
             const rect = element.getBoundingClientRect()
@@ -221,7 +234,7 @@ export function Navbar() {
             className="md:hidden fixed top-0 left-0 w-full h-screen bg-background/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center overflow-hidden"
             style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
           >
-            <nav className="container mx-auto flex flex-col space-y-4">
+            <nav className="container mx-auto flex flex-col space-y-3">
               <Link
                 href={getHref("about")}
                 className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
@@ -277,7 +290,7 @@ export function Navbar() {
                 Contact
               </Link>
             </nav>
-            <div className="grid grid-cols-3 gap-2 pt-6 justify-center items-center mx-auto">
+            <div className="grid grid-cols-3 gap-2 pt-20 justify-center items-center mx-auto">
               <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
                 <Link href={getHref("contact")}><Linkedin className="w-5 h-5" /></Link>
               </Button>
