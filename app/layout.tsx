@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
+import Script from "next/script"
 import "./globals.css"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
@@ -14,7 +15,8 @@ const inter = Inter({
   variable: "--font-inter",
 })
 export const metadata: Metadata = {
-  title: "VT | Portfolio",
+  metadataBase: new URL('https://www.vtitov.dev'),
+  title: "Vladislav Titov | Portfolio",
   description:
     "Portfolio of a creative developer and designer specializing in building engaging digital experiences with modern web technologies.",
   keywords: ["developer", "designer", "portfolio", "web development", "frontend", "UI/UX", "React", "Next.js"],
@@ -50,6 +52,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        <Script src="/theme-detector.js" strategy="beforeInteractive" />
+      </head>
       <body className={`${inter.variable} font-sans antialiased`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <MenuProvider>

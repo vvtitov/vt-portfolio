@@ -91,5 +91,9 @@ button {
   [role="button"] {
     cursor: none !important;
   }
+  
+  /* Ensure navbar elements work with custom cursor */
+  .navbar-header {
+    z-index: 50;
+  }
 }
-

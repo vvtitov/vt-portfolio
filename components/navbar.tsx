@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowDownRight, ArrowRight, Download, Github, Linkedin, Menu, X } from "lucide-react"
+import { ArrowDownRight, ArrowRight, Download, Github, Linkedin } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useMenu } from "@/context/menu-context"
@@ -102,19 +102,27 @@ export function Navbar() {
     return isHomePage ? `#${section}` : `/#${section}`
   }
 
+  // Estilo común para los enlaces del menú con underline en hover
+  const menuLinkStyle = `relative hover:text-primary transition-colors
+    after:absolute after:left-0 after:right-0 after:bottom-[-8px] after:h-[2px] 
+    after:bg-primary after:scale-x-0 hover:after:scale-x-100 
+    after:transition-transform after:duration-300 after:origin-center`;
+
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+      className={`navbar-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"
       } ${isVisible && !isMenuOpen ? "translate-y-0" : isMenuOpen ? "translate-y-0" : "-translate-y-full"}`}
+      style={{ pointerEvents: "auto" }}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between">
-          <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }}>
+          {/* Logo estático sin animaciones */}
+          <div className="z-[102]">
             <Link href="/" className="text-2xl font-bold">
               <Logo />
             </Link>
-          </motion.div>
+          </div>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8">
@@ -125,7 +133,7 @@ export function Navbar() {
             >
               <Link
                 href={getHref("about")}
-                className={`text-sm hover:text-primary transition-colors ${
+                className={`text-sm ${menuLinkStyle} ${
                   activeSection === "about" && isHomePage ? "text-primary font-medium" : ""
                 }`}
               >
@@ -139,7 +147,7 @@ export function Navbar() {
             >
               <Link
                 href={getHref("experience")}
-                className={`text-sm hover:text-primary transition-colors ${
+                className={`text-sm ${menuLinkStyle} ${
                   activeSection === "experience" && isHomePage ? "text-primary font-medium" : ""
                 }`}
               >
@@ -153,7 +161,7 @@ export function Navbar() {
             >
               <Link
                 href={getHref("skills")}
-                className={`text-sm hover:text-primary transition-colors ${
+                className={`text-sm ${menuLinkStyle} ${
                   activeSection === "skills" && isHomePage ? "text-primary font-medium" : ""
                 }`}
               >
@@ -167,7 +175,7 @@ export function Navbar() {
             >
               <Link
                 href={getHref("projects")}
-                className={`text-sm hover:text-primary transition-colors ${
+                className={`text-sm ${menuLinkStyle} ${
                   activeSection === "projects" && isHomePage ? "text-primary font-medium" : ""
                 }`}
               >
@@ -181,7 +189,7 @@ export function Navbar() {
             >
               <Link
                 href={getHref("contact")}
-                className={`text-sm hover:text-primary transition-colors ${
+                className={`text-sm ${menuLinkStyle} ${
                   activeSection === "contact" && isHomePage ? "text-primary font-medium" : ""
                 }`}
               >
@@ -202,28 +210,44 @@ export function Navbar() {
             >
               <Button asChild variant="outline" className="border-foreground bg-background/20 z-20 hover:bg-background/30">
                 <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                  PDF Resume
+                  PDF
                   <Download className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
             </motion.div>
           </nav>
 
-          {/* Mobile Menu Button */}
-          <div className="md:hidden flex items-center space-x-4">
+          {/* Mobile Menu Button y ThemeToggle con z-index alto para que permanezcan visibles */}
+          <div className="md:hidden flex items-center space-x-4 z-[102]">
             <ThemeToggle />
             <button 
-              className="focus:outline-none z-[101] relative" 
+              className="focus:outline-none relative" 
               onClick={() => setIsMenuOpen(!isMenuOpen)} 
               aria-label="Toggle menu"
             >
-              {isMenuOpen ? <X className="h-6 w-6 hover:rotate-3" /> : <Menu className="h-6 w-6 hover:rotate-3" />}
+              <div className="relative w-8 h-8 flex justify-center items-center">
+                {/* Primera línea */}
+                <div 
+                  className="absolute h-0.5 bg-foreground rounded-full w-6 transition-all duration-300"
+                  style={{ 
+                    transform: isMenuOpen ? 'translateY(0) rotate(45deg)' : 'translateY(-4px) rotate(0)',
+                  }} 
+                />
+                
+                {/* Segunda línea */}
+                <div 
+                  className="absolute h-0.5 bg-foreground rounded-full w-6 transition-all duration-300"
+                  style={{ 
+                    transform: isMenuOpen ? 'translateY(0) rotate(-45deg)' : 'translateY(4px) rotate(0)',
+                  }} 
+                />
+              </div>
             </button>
           </div>
         </div>
       </div>
 
-      {/* Mobile Navigation */}
+      {/* Mobile Navigation - Ahora sin duplicar el logo y el toggle theme */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -231,75 +255,78 @@ export function Navbar() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="md:hidden fixed top-0 left-0 w-full h-screen bg-background/95 backdrop-blur-md z-[100] flex flex-col items-center justify-center overflow-hidden"
+            className="md:hidden fixed top-0 left-0 w-full h-screen bg-background/95 backdrop-blur-md z-[101] flex flex-col pt-24"
             style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
           >
-            <nav className="container mx-auto flex flex-col space-y-3">
-              <Link
-                href={getHref("about")}
-                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
-                  activeSection === "about" && isHomePage ? "text-primary font-bold" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                About
-              </Link>
-              <Link
-                href={getHref("experience")}
-                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
-                  activeSection === "experience" && isHomePage ? "text-primary font-bold" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Experience
-              </Link>
-              <Link
-                href={getHref("skills")}
-                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
-                  activeSection === "skills" && isHomePage ? "text-primary font-bold" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Skills
-              </Link>
-              <Link
-                href={getHref("projects")}
-                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
-                  activeSection === "projects" && isHomePage ? "text-primary font-bold" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Projects
-              </Link>
-              <Link
-                href={getHref("testimonials")}
-                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
-                  activeSection === "testimonials" && isHomePage ? "text-primary font-bold" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Testimonials
-              </Link>
-              <Link
-                href={getHref("contact")}
-                className={`text-foreground text-xl font-medium hover:text-primary transition-colors py-3 ${
-                  activeSection === "contact" && isHomePage ? "text-primary font-bold" : ""
-                }`}
-                onClick={closeMenu}
-              >
-                Contact
-              </Link>
-            </nav>
-            <div className="grid grid-cols-3 gap-2 pt-20 justify-center items-center mx-auto">
-              <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
-                <Link href={getHref("contact")}><Linkedin className="w-5 h-5" /></Link>
-              </Button>
-              <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
-                <Link href={getHref("contact")}><Github className="w-5 h-5" /></Link>
-              </Button>
-              <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
-                <Link href={getHref("contact")}>PDF <ArrowDownRight className="w-7 h-7" /></Link>
-              </Button>
+            {/* Contenido del menú móvil - sin la barra superior */}
+            <div className="flex-1 flex items-center justify-center overflow-auto">
+              <nav className="container mx-auto flex flex-col space-y-3 px-20">
+                <Link
+                  href={getHref("about")}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
+                    activeSection === "about" && isHomePage ? "text-primary font-bold" : ""
+                  }`}
+                  onClick={closeMenu}
+                >
+                  About
+                </Link>
+                <Link
+                  href={getHref("experience")}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
+                    activeSection === "experience" && isHomePage ? "text-primary font-bold" : ""
+                  }`}
+                  onClick={closeMenu}
+                >
+                  Experience
+                </Link>
+                <Link
+                  href={getHref("skills")}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
+                    activeSection === "skills" && isHomePage ? "text-primary font-bold" : ""
+                  }`}
+                  onClick={closeMenu}
+                >
+                  Skills
+                </Link>
+                <Link
+                  href={getHref("projects")}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
+                    activeSection === "projects" && isHomePage ? "text-primary font-bold" : ""
+                  }`}
+                  onClick={closeMenu}
+                >
+                  Projects
+                </Link>
+                <Link
+                  href={getHref("testimonials")}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
+                    activeSection === "testimonials" && isHomePage ? "text-primary font-bold" : ""
+                  }`}
+                  onClick={closeMenu}
+                >
+                  Testimonials
+                </Link>
+                <Link
+                  href={getHref("contact")}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
+                    activeSection === "contact" && isHomePage ? "text-primary font-bold" : ""
+                  }`}
+                  onClick={closeMenu}
+                >
+                  Contact
+                </Link>
+              </nav>
+              <div className="flex flex-col gap-2 mr-10">
+                <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
+                  <Link href={getHref("contact")}><Linkedin className="w-5 h-5" /></Link>
+                </Button>
+                <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
+                  <Link href={getHref("contact")}><Github className="w-5 h-5" /></Link>
+                </Button>
+                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
+                  <Link href={getHref("contact")}>PDF <ArrowDownRight className="w-7 h-7" /></Link>
+                </Button>
+              </div>
             </div>
           </motion.div>
         )}

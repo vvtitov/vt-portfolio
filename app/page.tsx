@@ -257,7 +257,7 @@ export default function Home() {
             >              
               <Button asChild variant="outline" className="group border-foreground">
                 <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                  Download Full Resume
+                  Download Resume
                   <Download className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

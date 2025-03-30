@@ -106,18 +106,10 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+        <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-center items-center">
           <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} Vladislav Titov. All rights reserved.
+            &copy; {new Date().getFullYear()} - Dev by Vladislav Titov
           </p>
-          <div className="flex space-x-6 mt-4 md:mt-0">
-            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-              Privacy Policy
-            </Link>
-            <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors text-sm">
-              Terms of Service
-            </Link>
-          </div>
         </div>
       </div>
     </footer>

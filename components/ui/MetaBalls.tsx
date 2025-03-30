@@ -132,7 +132,7 @@ type BallParams = {
 
 const MetaBalls: React.FC<MetaBallsProps> = ({
   color = "#ffffff",
-  speed = 0.6,
+  speed = 0.4,
   enableMouseInteraction = true,
   hoverSmoothness = 2,
   animationSize = 20,
@@ -501,7 +501,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
           style={{
             left: `${mousePosition.x + 25}px`,
             top: `${mousePosition.y - 15}px`,
-            textShadow: '0 0 3px rgba(0,0,0,0.8)',
+            textShadow: 'none',
             transform: 'rotate(-5deg)',
             transition: 'transform 0.1s ease-out'
           }}

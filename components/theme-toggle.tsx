@@ -21,6 +21,11 @@ export function ThemeToggle() {
   // Usar el tema real si está montado, o el tema predeterminado si no
   const currentTheme = mounted ? theme : defaultTheme
 
+  // No renderizar nada hasta que el componente esté montado para evitar problemas de hidratación
+  if (!mounted) {
+    return null
+  }
+
   return (
     <Button
       variant="link"
