@@ -159,10 +159,21 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
   const metaBallsUniformRef = useRef<Vec3[]>([]);
   const ballParamsRef = useRef<BallParams[]>([]);
   const isInitializedRef = useRef<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isPointerInside, setIsPointerInside] = useState(false);
   const [canvasVisible, setCanvasVisible] = useState(true);
+
+  // Función para detectar si es un dispositivo móvil
+  const checkIfMobile = () => {
+    // Comprueba si es un dispositivo móvil basado en el ancho de la pantalla o la capacidad táctil
+    const isMobileDevice = 
+      (typeof window !== 'undefined' && window.innerWidth <= 768) || 
+      (typeof navigator !== 'undefined' && ('maxTouchPoints' in navigator && navigator.maxTouchPoints > 0));
+    
+    setIsMobile(isMobileDevice);
+  };
 
   // Función para inicializar o reinicializar el canvas
   const initializeCanvas = () => {
@@ -374,6 +385,9 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
   };
 
   useEffect(() => {
+    // Detectar si es un dispositivo móvil al cargar
+    checkIfMobile();
+
     // Inicializar el canvas
     initializeCanvas();
     
@@ -387,6 +401,9 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       }
       
       resizeTimeoutRef.current = window.setTimeout(() => {
+        // Volver a comprobar si es móvil cuando cambia el tamaño
+        checkIfMobile();
+        
         // Si el contenedor tiene dimensiones válidas pero el canvas no está visible,
         // reinicializar completamente
         const entry = entries[0];
@@ -407,7 +424,9 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     
     // Configurar event listeners para el mouse
     function onPointerMove(e: PointerEvent) {
-      if (!enableMouseInteraction || !container) return;
+      // No procesar eventos de mouse en dispositivos móviles
+      if (!enableMouseInteraction || isMobile || !container) return;
+      
       const rect = container.getBoundingClientRect();
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
@@ -423,13 +442,17 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     }
     
     function onPointerEnter() {
-      if (!enableMouseInteraction) return;
+      // No procesar eventos de mouse en dispositivos móviles
+      if (!enableMouseInteraction || isMobile) return;
+      
       pointerStateRef.current.inside = true;
       setIsPointerInside(true);
     }
     
     function onPointerLeave() {
-      if (!enableMouseInteraction) return;
+      // No procesar eventos de mouse en dispositivos móviles
+      if (!enableMouseInteraction || isMobile) return;
+      
       pointerStateRef.current.inside = false;
       setIsPointerInside(false);
     }
@@ -448,6 +471,12 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       }
     };
     
+    // Añadir listener para cambios de tamaño de ventana para detectar cambios en la orientación del móvil
+    const handleWindowResize = () => {
+      checkIfMobile();
+    };
+    
+    window.addEventListener('resize', handleWindowResize);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     
     // Cleanup
@@ -465,6 +494,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       }
       
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener('resize', handleWindowResize);
       container.removeEventListener("pointermove", onPointerMove);
       container.removeEventListener("pointerenter", onPointerEnter);
       container.removeEventListener("pointerleave", onPointerLeave);
@@ -495,7 +525,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
 
   return (
     <div ref={containerRef} className="w-full h-full relative">
-      {isPointerInside && (
+      {isPointerInside && !isMobile && (
         <div 
           className={`fixed pointer-events-none text-xs font-bold z-50 ${theme === "light" ? "text-black" : "text-white"}`}
           style={{

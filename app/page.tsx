@@ -262,7 +262,7 @@ export default function Home() {
                 </Link>
               </Button>
             </motion.div>
-            <div className="hidden md:block">
+            <div>
               <MetaBalls/>
             </div>
           </div>
