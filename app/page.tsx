@@ -57,7 +57,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <p className="text-lg md:text-xl text-foreground/90 mb-8 max-w-2xl text-left">
-                I'm a software engineer with 6+ years of experience in QA, passionate about crafting exceptional web experiences with clean and efficient code.
+                I'm a software engineer with 6+ years of experience in QA, passionate about creating innovative web experiences with clean and efficient code.
               </p>
             </motion.div>
 
