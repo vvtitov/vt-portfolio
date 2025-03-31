@@ -55,9 +55,9 @@ export function ExperienceTimeline() {
           </div>
 
           {/* Content */}
-          <div className={`md:w-1/2 ${index % 2 === 0 ? "md:pr-16 text-right" : "md:pl-16"} pl-16 md:pl-0`}>
+          <div className={`md:w-1/2 ${index % 2 === 0 ? "md:pr-16 md:text-right" : "md:pl-16"} pl-16 md:pl-0`}>
             <SpotlightCard className="bg-muted/80 rounded-lg shadow-sm border">
-              <div className="p-6">
+              <div className="p-6 text-left">
                 <h3 className="text-xl font-bold">{exp.role}</h3>
                 <p className="text-primary font-medium">{exp.company}</p>
                 <p className="text-sm text-muted-foreground mb-4">{exp.period}</p>

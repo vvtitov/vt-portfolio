@@ -232,8 +232,8 @@ export default function Home() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <p className="text-secondary-foreground/70 mb-8 leading-relaxed font-semibold">
-                My professional journey in the tech industry.
+              <p className="text-secondary-foreground/70 mb-8 leading-relaxed">
+                This is some of professional journey in the tech industry.
               </p>
             </motion.div>
           </div>

@@ -137,7 +137,7 @@ export function TechLogosCarousel() {
   const duplicatedLogos = [...techLogos, ...techLogos, ...techLogos, ...techLogos]
 
   return (
-    <div className="w-full overflow-hidden py-10 select-none">
+    <div className="w-full overflow-hidden pt-20 select-none">
       <div className="mb-8 text-center">
         <h3 className="text-xl md:text-2xl font-semibold text-foreground">
           Technologies I <span className="text-primary">Work With</span>
