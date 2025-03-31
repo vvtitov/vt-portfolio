@@ -113,10 +113,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <p className="text-muted-foreground mb-2 leading-relaxed px-4 text-left md:text-center">
-              I'm a dedicated and passionate software engineer with over 6 years of experience as a QA analyst. <br /> My expertise lies in crafting exceptional, functional, and accessible web experiences that delight users.
-              </p>
-              <p className="text-muted-foreground mb-8 leading-relaxed px-4 text-left md:text-center">
-              I believe in the importance of writing clean, efficient, and well-documented code. Trying to always look for new opportunities to expand my skill set and stay up-to-date with the latest industry trends.
+               My expertise lies in crafting exceptional, functional, and accessible web experiences that delight users.
               </p>
             </motion.div>
           </div>
