@@ -47,7 +47,7 @@ export default function Home() {
           <div className="max-w-4xl mx-auto text-center p-4 md:p-10">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground">
-                <AnimatedText text="Hi! 👋🏼 I'm Vlad" />
+                <AnimatedText text="Hello! 👋🏼 I'm Vladislav" />
               </h1>
             </motion.div>
 
@@ -57,7 +57,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <p className="text-lg md:text-xl text-foreground/90 mb-8 max-w-2xl text-left">
-                I'm a software engineer with 6+ years of experience in QA, passionate about creating innovative web experiences with clean and efficient code.
+                I'm a software developer with 6+ years of experience in Quality Assurance working for a software factory.
               </p>
             </motion.div>
 
@@ -530,21 +530,21 @@ export default function Home() {
                   <Mail className="h-5 w-5 mr-3 mt-1 text-primary" />
                   <div>
                     <h4 className="font-medium">Email</h4>
-                    <p className="text-muted-foreground">hello@example.com</p>
+                    <p className="text-muted-foreground">vladislavtitov.r@gmail.com</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <Linkedin className="h-5 w-5 mr-3 mt-1 text-primary" />
                   <div>
                     <h4 className="font-medium">LinkedIn</h4>
-                    <p className="text-muted-foreground">linkedin.com/in/username</p>
+                    <p className="text-muted-foreground">linkedin.com/in/vladislavtitov</p>
                   </div>
                 </div>
                 <div className="flex items-start">
                   <Github className="h-5 w-5 mr-3 mt-1 text-primary" />
                   <div>
                     <h4 className="font-medium">GitHub</h4>
-                    <p className="text-muted-foreground">github.com/username</p>
+                    <p className="text-muted-foreground">github.com/vvtitov</p>
                   </div>
                 </div>
               </div>
@@ -556,7 +556,7 @@ export default function Home() {
 
               <div className="flex gap-4">
                 <Button asChild className="group">
-                  <Link href="mailto:hello@example.com">
+                  <Link href="mailto:vladislavtitov.r@gmail.com">
                     Send Email
                     <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                   </Link>

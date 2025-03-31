@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import {
   Renderer,
@@ -22,6 +22,29 @@ type MetaBallsProps = {
   cursorBallColor?: string;
   enableTransparency?: boolean;
 };
+
+// Hook personalizado para detectar si es un dispositivo móvil
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // Función para verificar si la pantalla es pequeña (móvil)
+    const checkIfMobile = () => {
+      setIsMobile(window.innerWidth < 768); // 768px es el breakpoint típico para tablets/móviles
+    };
+
+    // Comprobar al inicio
+    checkIfMobile();
+
+    // Comprobar cuando cambie el tamaño de la ventana
+    window.addEventListener('resize', checkIfMobile);
+    
+    // Limpiar el event listener
+    return () => window.removeEventListener('resize', checkIfMobile);
+  }, []);
+
+  return isMobile;
+}
 
 function parseHexColor(hex: string): [number, number, number] {
   const c = hex.replace("#", "");
@@ -130,19 +153,18 @@ type BallParams = {
 };
 
 const MetaBalls: React.FC<MetaBallsProps> = ({
-  color = "#ffffff",
-  speed = 0.3,
+  speed = 0.4,
   enableMouseInteraction = true,
   hoverSmoothness = 0.05,
-  animationSize = 20,
+  animationSize =10,
   ballCount = 15,
-  clumpFactor = 1,
+  clumpFactor = 1.2,
   cursorBallSize = 3,
-  cursorBallColor = "#ffffff",
   enableTransparency = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const { theme, resolvedTheme } = useTheme();
+  const isMobile = useIsMobile(); // Detectar si es un dispositivo móvil
   
   // Determine the color based on the theme
   const themeColor = resolvedTheme === "light" ? "#000000" : "#ffffff";
@@ -192,7 +214,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         iCursorColor: { value: new Vec3(r2, g2, b2) },
         iAnimationSize: { value: animationSize },
         iBallCount: { value: ballCount },
-        iCursorBallSize: { value: cursorBallSize },
+        iCursorBallSize: { value: isMobile ? 0 : cursorBallSize }, // Ocultar el cursor ball en móviles
         iMetaBalls: { value: metaBallsUniform },
         iClumpFactor: { value: clumpFactor },
         enableTransparency: { value: enableTransparency },
@@ -240,7 +262,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     resize();
 
     function onPointerMove(e: PointerEvent) {
-      if (!enableMouseInteraction || !container) return;
+      if (!enableMouseInteraction || isMobile || !container) return; // No procesar en móviles
       const rect = container.getBoundingClientRect();
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
@@ -248,16 +270,20 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       pointerY = (1 - py / rect.height) * gl.canvas.height;
     }
     function onPointerEnter() {
-      if (!enableMouseInteraction) return;
+      if (!enableMouseInteraction || isMobile) return; // No procesar en móviles
       pointerInside = true;
     }
     function onPointerLeave() {
-      if (!enableMouseInteraction) return;
+      if (!enableMouseInteraction || isMobile) return; // No procesar en móviles
       pointerInside = false;
     }
-    container.addEventListener("pointermove", onPointerMove);
-    container.addEventListener("pointerenter", onPointerEnter);
-    container.addEventListener("pointerleave", onPointerLeave);
+
+    // Solo añadir event listeners si no es móvil
+    if (!isMobile) {
+      container.addEventListener("pointermove", onPointerMove);
+      container.addEventListener("pointerenter", onPointerEnter);
+      container.addEventListener("pointerleave", onPointerLeave);
+    }
 
     const startTime = performance.now();
     let animationFrameId: number;
@@ -278,7 +304,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       }
 
       let targetX: number, targetY: number;
-      if (pointerInside) {
+      if (pointerInside && !isMobile) { // Solo seguir el puntero si no es móvil
         targetX = pointerX;
         targetY = pointerY;
       } else {
@@ -300,9 +326,11 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", resize);
-      container.removeEventListener("pointermove", onPointerMove);
-      container.removeEventListener("pointerenter", onPointerEnter);
-      container.removeEventListener("pointerleave", onPointerLeave);
+      if (!isMobile) { // Solo eliminar event listeners si no es móvil
+        container.removeEventListener("pointermove", onPointerMove);
+        container.removeEventListener("pointerenter", onPointerEnter);
+        container.removeEventListener("pointerleave", onPointerLeave);
+      }
       container.removeChild(gl.canvas);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
@@ -317,6 +345,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     clumpFactor,
     cursorBallSize,
     enableTransparency,
+    isMobile, // Añadir isMobile como dependencia
   ]);
 
   return <div ref={containerRef} className="w-full h-full relative" />;
