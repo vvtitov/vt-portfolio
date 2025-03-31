@@ -46,6 +46,7 @@ export function TechLogosCarousel() {
   const [containerWidth, setContainerWidth] = useState(0)
   const [itemWidth, setItemWidth] = useState(0)
   const controls = useAnimationControls()
+  const animationStarted = useRef(false)
 
   // Handle mounting and responsive behavior
   useEffect(() => {
@@ -88,21 +89,23 @@ export function TechLogosCarousel() {
     }
 
     updateWidths()
-    window.addEventListener('resize', updateWidths)
     
-    // Start the animation
-    startAnimation()
-
+    // Use ResizeObserver instead of resize event for better performance
+    const resizeObserver = new ResizeObserver(updateWidths)
+    if (containerRef.current) {
+      resizeObserver.observe(containerRef.current)
+    }
+    
     return () => {
-      window.removeEventListener('resize', updateWidths)
+      resizeObserver.disconnect()
     }
   }, [mounted])
 
   // Function to start the infinite animation
   const startAnimation = async () => {
-    if (!containerWidth || !itemWidth) return
+    if (!containerWidth || !itemWidth || animationStarted.current) return
     
-    // Calculate speed based on screen size (pixels per second) - Increased for more dynamism
+    // Calculate speed based on screen size (pixels per second)
     const speed = screenSize.isMobile ? 150 : screenSize.isTablet ? 130 : 100
     
     // Calculate duration based on container width and speed
@@ -122,14 +125,24 @@ export function TechLogosCarousel() {
         repeatDelay: 0
       }
     })
+    
+    animationStarted.current = true
   }
 
-  // Restart animation when screen size changes
+  // Start animation when widths are available
   useEffect(() => {
-    if (mounted) {
+    if (mounted && containerWidth && itemWidth && !animationStarted.current) {
       startAnimation()
     }
-  }, [screenSize, itemWidth, containerWidth])
+  }, [mounted, containerWidth, itemWidth])
+
+  // Reset animation flag when screen size changes significantly
+  useEffect(() => {
+    if (screenSize.width > 0) {
+      animationStarted.current = false
+      startAnimation()
+    }
+  }, [screenSize.width])
 
   if (!mounted) return null
 
@@ -145,6 +158,9 @@ export function TechLogosCarousel() {
       </div>
       
       <div className="relative w-full overflow-hidden">
+        {/* Left fade effect */}
+        <div className="absolute left-0 top-0 bottom-0 w-12 md:w-16 z-10 bg-gradient-to-r from-background to-transparent pointer-events-none"></div>
+        
         <motion.div 
           ref={containerRef}
           className="flex items-center"
@@ -171,6 +187,9 @@ export function TechLogosCarousel() {
             )
           })}
         </motion.div>
+        
+        {/* Right fade effect */}
+        <div className="absolute right-0 top-0 bottom-0 w-12 md:w-16 z-10 bg-gradient-to-l from-background to-transparent pointer-events-none"></div>
       </div>
     </div>
   )
