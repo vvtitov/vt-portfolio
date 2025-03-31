@@ -259,8 +259,8 @@ export function Navbar() {
             style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
           >
             {/* Contenido del menú móvil - sin la barra superior */}
-            <div className="flex-1 flex items-center justify-center overflow-auto">
-              <nav className="container mx-auto flex flex-col space-y-3 px-20">
+            <div className="flex-1 flex items-start mt-20 justify-center overflow-auto">
+              <nav className="container mx-auto flex flex-col space-y-2 px-20">
                 <Link
                   href={getHref("about")}
                   className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
@@ -298,15 +298,6 @@ export function Navbar() {
                   Projects
                 </Link>
                 <Link
-                  href={getHref("testimonials")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
-                    activeSection === "testimonials" && isHomePage ? "text-primary font-bold" : ""
-                  }`}
-                  onClick={closeMenu}
-                >
-                  Testimonials
-                </Link>
-                <Link
                   href={getHref("contact")}
                   className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
                     activeSection === "contact" && isHomePage ? "text-primary font-bold" : ""
@@ -317,10 +308,10 @@ export function Navbar() {
                 </Link>
               </nav>
               <div className="flex flex-col gap-2 mr-10">
-                <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
+                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
                   <Link href={getHref("contact")}><Linkedin className="w-5 h-5" /></Link>
                 </Button>
-                <Button asChild className="w-full py-6 text-lg hover:scale-110 transition-transform" onClick={closeMenu} variant="link">
+                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
                   <Link href={getHref("contact")}><Github className="w-5 h-5" /></Link>
                 </Button>
                 <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
