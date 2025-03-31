@@ -37,8 +37,8 @@ export default function Home() {
       <ScrollToTop />
 
       {/* Hero Section */}
-      <section ref={ref} className="relative h-screen flex items-center justify-center overflow-hidden">
-        <motion.div style={{ y, opacity }} className="absolute inset-0 z-0">
+      <section ref={ref} className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
+        <motion.div style={{ y, opacity }} className="absolute inset-0 z-0 min-h-full">
           <Threads />
           <div className="absolute inset-0 bg-foreground/10 dark:bg-white/30 z-10 " />
         </motion.div>
