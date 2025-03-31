@@ -44,7 +44,7 @@ export default function Home() {
         </motion.div>
 
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center p-4 md:p-10" >
+          <div className="max-w-4xl mx-auto text-center p-4 md:p-10">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
               <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground">
                 <AnimatedText text="Hi! 👋🏼 I'm Vlad" />
@@ -141,7 +141,7 @@ export default function Home() {
                   <h4 className="text-3xl font-bold text-primary mb-2">
                     <AnimatedCounter from={0} to={50} duration={2} />+
                   </h4>
-                  <p className="text-sm text-muted-foreground">Projects Completed</p>
+                  <p className="text-sm text-muted-foreground">Sprints</p>
                 </div>
                 <div className="text-center">
                   <h4 className="text-3xl font-bold text-primary mb-2">
@@ -179,21 +179,21 @@ export default function Home() {
               <div className="flex gap-4 items-center justify-center md:justify-start">
                 <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
                   <Button variant="outline" size="icon" asChild>
-                    <Link href="https://github.com" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+                    <Link href="https://github.com/vvtitov" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
                       <Github className="h-5 w-5" />
                     </Link>
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
                   <Button variant="outline" size="icon" asChild>
-                    <Link href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+                    <Link href="https://linkedin.com/in/vladislavtitov" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
                       <Linkedin className="h-5 w-5" />
                     </Link>
                   </Button>
                 </motion.div>
                 <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
                   <Button variant="outline" size="icon" asChild>
-                    <Link href="mailto:hello@example.com" aria-label="Email">
+                    <Link href="mailto:vladislavtitov.r@gmail.com" aria-label="Email">
                       <Mail className="h-5 w-5" />
                     </Link>
                   </Button>

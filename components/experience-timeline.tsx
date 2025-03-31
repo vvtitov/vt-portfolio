@@ -8,30 +8,39 @@ export function ExperienceTimeline() {
   const experiences = [
     {
       id: 1,
-      role: "Senior Frontend Developer",
-      company: "Tech Innovations Inc.",
-      period: "2021 - Present",
+      role: "Front-end Developer",
+      company: "Three Mangos Agency",
+      period: "2024 - Present",
       description:
         "Lead the frontend development team in creating responsive, accessible web applications using React and Next.js. Implemented performance optimizations resulting in a 40% improvement in load times.",
-      technologies: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion"],
+      technologies: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Git", "Git Actions", ],
     },
     {
       id: 2,
-      role: "UI/UX Developer",
-      company: "Creative Solutions Agency",
-      period: "2019 - 2021",
+      role: "QA Analyst",
+      company: "MediaMonks",
+      period: "2018 - 2024",
       description:
-        "Designed and developed user interfaces for various client projects. Collaborated with designers to implement pixel-perfect, responsive designs with smooth animations and interactions.",
-      technologies: ["JavaScript", "React", "SCSS", "Figma", "GSAP"],
+        "Performed functional and visual testing for web and mobile apps. Shift-lefted testing processes to improve efficiency. Created and maintained documentation, test plans, and API tests with Postman. Executed SQL queries for database testing and helped with Playwright E2E tests. Conducted stakeholder demos and worked with Jira, X-Ray and Agile methodologies.",
+      technologies: ["JavaScript","Postman", "SQL", "Playwright", "Jira", "X-Ray", "Agile", "BrowserStack" ],
     },
     {
       id: 3,
-      role: "Web Developer",
-      company: "Digital Craft Studio",
-      period: "2017 - 2019",
+      role: "QA Tester",
+      company: "Greylab",
+      period: "2017 - 2018",
+      description:
+        "Conducted thorough testing of web applications to identify and resolve bugs and performance issues. Developed and executed test plans, ensuring high-quality standards and compliance with industry best practices.",
+      technologies: ["HTML", "CSS", "JavaScript", "Jira", "Waterfall", "Postman"],
+    },
+    {
+      id: 4,
+      role: "WordPress Developer",
+      company: "Freelance",
+      period: "2015 - 2017",
       description:
         "Developed and maintained websites for small to medium-sized businesses. Implemented responsive designs and ensured cross-browser compatibility and accessibility compliance.",
-      technologies: ["HTML", "CSS", "JavaScript", "WordPress", "PHP"],
+      technologies: ["HTML", "CSS", "JavaScript", "WordPress", "PHP", "Adobe"],  
     },
   ]
 
@@ -64,7 +73,7 @@ export function ExperienceTimeline() {
                 <p className="text-muted-foreground mb-4">{exp.description}</p>
                 <div className="flex flex-wrap gap-2 justify-start">
                   {exp.technologies.map((tech) => (
-                    <span key={tech} className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground">
+                    <span key={tech} className="text-xs px-2 py-1 bg-primary/10 rounded-full text-muted-foreground">
                       {tech}
                     </span>
                   ))}

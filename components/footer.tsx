@@ -11,12 +11,12 @@ export function Footer() {
               <span className="text-primary">Vladislav Titov</span>
             </Link>
             <p className="text-muted-foreground max-w-md mb-6">
-              A creative developer and designer focused on building engaging digital experiences through thoughtful
-              design and clean code.
+              Thanks for visiting my portfolio! <br />
+              Let's create something amazing together.
             </p>
             <div className="flex space-x-4">
               <Link
-                href="https://github.com"
+                href="https://github.com/vvtitov"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -25,7 +25,7 @@ export function Footer() {
                 <Github className="h-5 w-5" />
               </Link>
               <Link
-                href="https://linkedin.com"
+                href="https://linkedin.com/in/vladislavtitov"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-muted-foreground hover:text-foreground transition-colors"
@@ -34,7 +34,7 @@ export function Footer() {
                 <Linkedin className="h-5 w-5" />
               </Link>
               <Link
-                href="mailto:hello@example.com"
+                href="mailto:vladislavtitov.r@gmail.com"
                 className="text-muted-foreground hover:text-foreground transition-colors"
                 aria-label="Email"
               >
@@ -108,7 +108,7 @@ export function Footer() {
 
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-center items-center">
           <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()} - Dev by Vladislav Titov
+            &copy; {new Date().getFullYear()}. All rights reserved.
           </p>
         </div>
       </div>
