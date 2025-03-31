@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Briefcase } from "lucide-react"
+import SpotlightCard from "../app/components/ui/SpotlightCard/SpotlightCard"
 
 export function ExperienceTimeline() {
   const experiences = [
@@ -55,19 +56,21 @@ export function ExperienceTimeline() {
 
           {/* Content */}
           <div className={`md:w-1/2 ${index % 2 === 0 ? "md:pr-16 text-right" : "md:pl-16"} pl-16 md:pl-0`}>
-            <div className="bg-card p-6 rounded-lg shadow-sm border">
-              <h3 className="text-xl font-bold">{exp.role}</h3>
-              <p className="text-primary font-medium">{exp.company}</p>
-              <p className="text-sm text-muted-foreground mb-4">{exp.period}</p>
-              <p className="text-muted-foreground mb-4">{exp.description}</p>
-              <div className="flex flex-wrap gap-2 justify-start">
-                {exp.technologies.map((tech) => (
-                  <span key={tech} className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground">
-                    {tech}
-                  </span>
-                ))}
+            <SpotlightCard className="bg-muted/70 rounded-lg shadow-sm border">
+              <div className="p-6">
+                <h3 className="text-xl font-bold">{exp.role}</h3>
+                <p className="text-primary font-medium">{exp.company}</p>
+                <p className="text-sm text-muted-foreground mb-4">{exp.period}</p>
+                <p className="text-muted-foreground mb-4">{exp.description}</p>
+                <div className="flex flex-wrap gap-2 justify-start">
+                  {exp.technologies.map((tech) => (
+                    <span key={tech} className="text-xs px-2 py-1 bg-muted rounded-full text-muted-foreground">
+                      {tech}
+                    </span>
+                  ))}
+                </div>
               </div>
-            </div>
+            </SpotlightCard>
           </div>
 
           {/* Empty div for layout */}
@@ -77,4 +80,3 @@ export function ExperienceTimeline() {
     </div>
   )
 }
-

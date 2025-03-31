@@ -1,4 +1,5 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef } from "react";
+import { useTheme } from "next-themes";
 import {
   Renderer,
   Program,
@@ -8,7 +9,6 @@ import {
   Vec3,
   Camera,
 } from "ogl";
-import { useTheme } from "next-themes";
 
 type MetaBallsProps = {
   color?: string;
@@ -68,7 +68,6 @@ function hash33(v: number[]): number[] {
   return result;
 }
 
-// Optimized shader with better performance
 const vertex = `#version 300 es
 precision highp float;
 layout(location = 0) in vec2 position;
@@ -91,12 +90,12 @@ uniform vec3 iMetaBalls[50]; // Precomputed: xy = position, z = radius
 uniform float iClumpFactor;
 uniform bool enableTransparency;
 out vec4 outColor;
+const float PI = 3.14159265359;
  
-// Optimized metaball function that avoids division
 float getMetaBallValue(vec2 c, float r, vec2 p) {
     vec2 d = p - c;
-    float dist2 = max(dot(d, d), 0.0001); // Avoid division by zero
-    return r * r / dist2;
+    float dist2 = dot(d, d);
+    return (r * r) / dist2;
 }
  
 void main() {
@@ -104,20 +103,20 @@ void main() {
     float scale = iAnimationSize / iResolution.y;
     vec2 coord = (fc - iResolution.xy * 0.5) * scale;
     vec2 mouseW = (iMouse.xy - iResolution.xy * 0.5) * scale;
-    
     float m1 = 0.0;
-    for (int i = 0; i < iBallCount; i++) {
+    for (int i = 0; i < 50; i++) {
+        if (i >= iBallCount) break;
         m1 += getMetaBallValue(iMetaBalls[i].xy, iMetaBalls[i].z, coord);
     }
-    
     float m2 = getMetaBallValue(mouseW, iCursorBallSize, coord);
     float total = m1 + m2;
-    
-    // Optimized smoothstep calculation
-    float threshold = 1.3;
-    float f = smoothstep(-1.0, 1.0, (total - threshold) / min(1.0, fwidth(total)));
-    
-    vec3 cFinal = mix(vec3(0.0), mix(iColor, iCursorColor, m2 / max(total, 0.0001)), step(0.0, total));
+    float f = smoothstep(-1.0, 1.0, (total - 1.3) / min(1.0, fwidth(total)));
+    vec3 cFinal = vec3(0.0);
+    if (total > 0.0) {
+        float alpha1 = m1 / total;
+        float alpha2 = m2 / total;
+        cFinal = iColor * alpha1 + iCursorColor * alpha2;
+    }
     outColor = vec4(cFinal * f, enableTransparency ? f : 1.0);
 }
 `;
@@ -132,75 +131,33 @@ type BallParams = {
 
 const MetaBalls: React.FC<MetaBallsProps> = ({
   color = "#ffffff",
-  speed = 0.4,
+  speed = 0.3,
   enableMouseInteraction = true,
-  hoverSmoothness = 2,
+  hoverSmoothness = 0.05,
   animationSize = 20,
-  ballCount = 10,
+  ballCount = 15,
   clumpFactor = 1,
-  cursorBallSize = 2,
+  cursorBallSize = 3,
   cursorBallColor = "#ffffff",
   enableTransparency = true,
 }) => {
-  const { theme } = useTheme();
   const containerRef = useRef<HTMLDivElement>(null);
-  const rendererRef = useRef<Renderer | null>(null);
-  const programRef = useRef<Program | null>(null);
-  const resizeTimeoutRef = useRef<number | null>(null);
-  const resizeObserverRef = useRef<ResizeObserver | null>(null);
-  const animationFrameIdRef = useRef<number | null>(null);
-  const startTimeRef = useRef<number>(0);
-  const mouseBallPosRef = useRef({ x: 0, y: 0 });
-  const pointerStateRef = useRef({
-    inside: false,
-    x: 0,
-    y: 0
-  });
-  const metaBallsUniformRef = useRef<Vec3[]>([]);
-  const ballParamsRef = useRef<BallParams[]>([]);
-  const isInitializedRef = useRef<boolean>(false);
-  const [isMobile, setIsMobile] = useState<boolean>(false);
+  const { theme, resolvedTheme } = useTheme();
   
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [isPointerInside, setIsPointerInside] = useState(false);
-  const [canvasVisible, setCanvasVisible] = useState(true);
+  // Determine the color based on the theme
+  const themeColor = resolvedTheme === "light" ? "#000000" : "#ffffff";
+  const themeCursorColor = resolvedTheme === "light" ? "#000000" : "#ffffff";
 
-  // Función para detectar si es un dispositivo móvil
-  const checkIfMobile = () => {
-    // Solo considerar como móvil las pantallas pequeñas (sm), permitir interacción en md y lg
-    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 640;
-    setIsMobile(isSmallScreen);
-  };
-
-  // Función para inicializar o reinicializar el canvas
-  const initializeCanvas = () => {
+  useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
 
-    // Limpiar canvas anterior si existe
-    if (rendererRef.current && rendererRef.current.gl.canvas.parentNode) {
-      rendererRef.current.gl.canvas.parentNode.removeChild(rendererRef.current.gl.canvas);
-      rendererRef.current.gl.getExtension("WEBGL_lose_context")?.loseContext();
-      rendererRef.current = null;
-    }
-
-    // Cancelar animación anterior si existe
-    if (animationFrameIdRef.current !== null) {
-      cancelAnimationFrame(animationFrameIdRef.current);
-      animationFrameIdRef.current = null;
-    }
-
-    // Use actual device pixel ratio for better rendering quality
-    const dpr = Math.min(window.devicePixelRatio, 2);
+    const dpr = 1;
     const renderer = new Renderer({
       dpr,
       alpha: true,
       premultipliedAlpha: false,
-      antialias: true, // Add antialiasing for smoother edges
-      powerPreference: 'high-performance', // Solicitar GPU de alto rendimiento
     });
-    rendererRef.current = renderer;
-    
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, enableTransparency ? 0 : 1);
     container.appendChild(gl.canvas);
@@ -216,16 +173,13 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     camera.position.z = 1;
 
     const geometry = new Triangle(gl);
-    const isLightMode = theme === "light";
-    const [r1, g1, b1] = isLightMode ? parseHexColor("#000000") : parseHexColor(color);
-    const [r2, g2, b2] = isLightMode ? parseHexColor("#000000") : parseHexColor(cursorBallColor);
+    const [r1, g1, b1] = parseHexColor(themeColor);
+    const [r2, g2, b2] = parseHexColor(themeCursorColor);
 
-    // Pre-allocate metaballs array
     const metaBallsUniform: Vec3[] = [];
     for (let i = 0; i < 50; i++) {
       metaBallsUniform.push(new Vec3(0, 0, 0));
     }
-    metaBallsUniformRef.current = metaBallsUniform;
 
     const program = new Program(gl, {
       vertex,
@@ -244,13 +198,11 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         enableTransparency: { value: enableTransparency },
       },
     });
-    programRef.current = program;
 
     const mesh = new Mesh(gl, { geometry, program });
     const scene = new Transform();
     mesh.setParent(scene);
 
-    // Pre-compute ball parameters
     const maxBalls = 50;
     const effectiveBallCount = Math.min(ballCount, maxBalls);
     const ballParams: BallParams[] = [];
@@ -265,259 +217,98 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       const radiusVal = 0.5 + h2[2] * (2.0 - 0.5);
       ballParams.push({ st, dtFactor, baseScale, toggle, radius: radiusVal });
     }
-    ballParamsRef.current = ballParams;
 
-    // Realizar un resize inicial para configurar correctamente el tamaño
-    handleResize();
+    const mouseBallPos = { x: 0, y: 0 };
+    let pointerInside = false;
+    let pointerX = 0;
+    let pointerY = 0;
 
-    startTimeRef.current = performance.now();
-    
-    // Iniciar el bucle de animación
-    startAnimationLoop(scene, camera, gl);
-    
-    isInitializedRef.current = true;
-  };
-
-  // Función para manejar el resize
-  const handleResize = () => {
-    const container = containerRef.current;
-    const renderer = rendererRef.current;
-    const program = programRef.current;
-    
-    if (!container || !renderer || !program) return;
-    
-    const width = container.clientWidth;
-    const height = container.clientHeight;
-    
-    // Solo actualizar si las dimensiones son válidas
-    if (width > 0 && height > 0) {
-      renderer.setSize(width, height);
-      
-      if (program.uniforms.iResolution) {
-        program.uniforms.iResolution.value.set(
-          renderer.gl.canvas.width,
-          renderer.gl.canvas.height,
-          0
-        );
-      }
-      
-      // Asegurar que el canvas sea visible
-      setCanvasVisible(true);
-    } else {
-      // Si las dimensiones no son válidas, ocultar el canvas
-      setCanvasVisible(false);
+    function resize() {
+      if (!container) return;
+      const width = container.clientWidth;
+      const height = container.clientHeight;
+      renderer.setSize(width * dpr, height * dpr);
+      gl.canvas.style.width = `${width}px`;
+      gl.canvas.style.height = `${height}px`;
+      program.uniforms.iResolution.value.set(
+        gl.canvas.width,
+        gl.canvas.height,
+        0
+      );
     }
-  };
+    window.addEventListener("resize", resize);
+    resize();
 
-  // Función para iniciar el bucle de animación
-  const startAnimationLoop = (scene: Transform, camera: Camera, gl: any) => {
-    const program = programRef.current;
-    const renderer = rendererRef.current;
-    
-    if (!program || !renderer) return;
-    
-    const update = (t: number) => {
-      if (!program || !renderer || !canvasVisible) {
-        animationFrameIdRef.current = requestAnimationFrame(update);
-        return;
-      }
-      
-      animationFrameIdRef.current = requestAnimationFrame(update);
-      
-      // Calcular tiempo transcurrido con un factor de suavizado para evitar saltos
-      const elapsed = (t - startTimeRef.current) * 0.001;
+    function onPointerMove(e: PointerEvent) {
+      if (!enableMouseInteraction || !container) return;
+      const rect = container.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+      pointerX = (px / rect.width) * gl.canvas.width;
+      pointerY = (1 - py / rect.height) * gl.canvas.height;
+    }
+    function onPointerEnter() {
+      if (!enableMouseInteraction) return;
+      pointerInside = true;
+    }
+    function onPointerLeave() {
+      if (!enableMouseInteraction) return;
+      pointerInside = false;
+    }
+    container.addEventListener("pointermove", onPointerMove);
+    container.addEventListener("pointerenter", onPointerEnter);
+    container.addEventListener("pointerleave", onPointerLeave);
+
+    const startTime = performance.now();
+    let animationFrameId: number;
+    function update(t: number) {
+      animationFrameId = requestAnimationFrame(update);
+      const elapsed = (t - startTime) * 0.001;
       program.uniforms.iTime.value = elapsed;
 
-      // Actualizar posiciones de metaballs con interpolación más suave
-      const effectiveBallCount = Math.min(ballCount, 50);
       for (let i = 0; i < effectiveBallCount; i++) {
-        const p = ballParamsRef.current[i];
+        const p = ballParams[i];
         const dt = elapsed * speed * p.dtFactor;
         const th = p.st + dt;
-        
-        // Usar funciones sin optimizaciones agresivas para mayor fluidez
         const x = Math.cos(th);
         const y = Math.sin(th + dt * p.toggle);
-        
         const posX = x * p.baseScale * clumpFactor;
         const posY = y * p.baseScale * clumpFactor;
-        
-        metaBallsUniformRef.current[i].set(posX, posY, p.radius);
+        metaBallsUniform[i].set(posX, posY, p.radius);
       }
 
-      // Actualizar posición del cursor con interpolación más precisa
       let targetX: number, targetY: number;
-      
-      // En móviles, siempre usar el movimiento automático (nunca seguir el cursor)
-      if (pointerStateRef.current.inside && !isMobile) {
-        targetX = pointerStateRef.current.x;
-        targetY = pointerStateRef.current.y;
+      if (pointerInside) {
+        targetX = pointerX;
+        targetY = pointerY;
       } else {
         const cx = gl.canvas.width * 0.5;
         const cy = gl.canvas.height * 0.5;
         const rx = gl.canvas.width * 0.15;
         const ry = gl.canvas.height * 0.15;
-        
-        // Usar movimiento más fluido para el cursor automático
-        targetX = cx + Math.cos(elapsed * speed * 0.5) * rx;
-        targetY = cy + Math.sin(elapsed * speed * 0.5) * ry;
+        targetX = cx + Math.cos(elapsed * speed) * rx;
+        targetY = cy + Math.sin(elapsed * speed) * ry;
       }
-      
-      // Usar un factor de suavizado adaptativo basado en el tiempo entre frames
-      const deltaTime = Math.min(1/30, 1/60); // Limitar a un mínimo de 30fps para evitar saltos
-      const adaptiveSmoothness = Math.min(1.0, hoverSmoothness * deltaTime * 60);
-      
-      mouseBallPosRef.current.x += (targetX - mouseBallPosRef.current.x) * adaptiveSmoothness;
-      mouseBallPosRef.current.y += (targetY - mouseBallPosRef.current.y) * adaptiveSmoothness;
-      
-      program.uniforms.iMouse.value.set(
-        mouseBallPosRef.current.x, 
-        mouseBallPosRef.current.y, 
-        0
-      );
+      mouseBallPos.x += (targetX - mouseBallPos.x) * hoverSmoothness;
+      mouseBallPos.y += (targetY - mouseBallPos.y) * hoverSmoothness;
+      program.uniforms.iMouse.value.set(mouseBallPos.x, mouseBallPos.y, 0);
 
-      // Renderizar la escena
       renderer.render({ scene, camera });
-    };
-    
-    animationFrameIdRef.current = requestAnimationFrame(update);
-  };
-
-  useEffect(() => {
-    // Detectar si es un dispositivo móvil al cargar
-    checkIfMobile();
-
-    // Inicializar el canvas
-    initializeCanvas();
-    
-    const container = containerRef.current;
-    if (!container) return;
-
-    // En dispositivos móviles, hacer que el contenedor no sea enfocable
-    if (isMobile) {
-      container.setAttribute('tabindex', '-1');
-      container.style.outline = 'none';
-      container.style.pointerEvents = 'none';
     }
+    animationFrameId = requestAnimationFrame(update);
 
-    // Configurar el ResizeObserver para detectar cambios en el contenedor
-    const resizeObserver = new ResizeObserver((entries) => {
-      if (resizeTimeoutRef.current !== null) {
-        window.clearTimeout(resizeTimeoutRef.current);
-      }
-      
-      resizeTimeoutRef.current = window.setTimeout(() => {
-        // Volver a comprobar si es móvil cuando cambia el tamaño
-        checkIfMobile();
-        
-        // Si el contenedor tiene dimensiones válidas pero el canvas no está visible,
-        // reinicializar completamente
-        const entry = entries[0];
-        if (entry.contentRect.width > 0 && entry.contentRect.height > 0) {
-          if (!canvasVisible || !isInitializedRef.current) {
-            initializeCanvas();
-          } else {
-            handleResize();
-          }
-        } else {
-          setCanvasVisible(false);
-        }
-      }, 100);
-    });
-    
-    resizeObserver.observe(container);
-    resizeObserverRef.current = resizeObserver;
-    
-    // Configurar event listeners para el mouse
-    function onPointerMove(e: PointerEvent) {
-      // No procesar eventos de mouse en dispositivos móviles
-      if (!enableMouseInteraction || isMobile || !container) return;
-      
-      const rect = container.getBoundingClientRect();
-      const px = e.clientX - rect.left;
-      const py = e.clientY - rect.top;
-      
-      if (rendererRef.current && rendererRef.current.gl) {
-        const gl = rendererRef.current.gl;
-        pointerStateRef.current.x = (px / rect.width) * gl.canvas.width;
-        pointerStateRef.current.y = (1 - py / rect.height) * gl.canvas.height;
-      }
-      
-      // Actualizar posición del mouse para el texto
-      setMousePosition({ x: e.clientX, y: e.clientY });
-    }
-    
-    function onPointerEnter() {
-      // No procesar eventos de mouse en dispositivos móviles
-      if (!enableMouseInteraction || isMobile) return;
-      
-      pointerStateRef.current.inside = true;
-      setIsPointerInside(true);
-    }
-    
-    function onPointerLeave() {
-      // No procesar eventos de mouse en dispositivos móviles
-      if (!enableMouseInteraction || isMobile) return;
-      
-      pointerStateRef.current.inside = false;
-      setIsPointerInside(false);
-    }
-    
-    container.addEventListener("pointermove", onPointerMove);
-    container.addEventListener("pointerenter", onPointerEnter);
-    container.addEventListener("pointerleave", onPointerLeave);
-    
-    // Manejar cambios de visibilidad de la página
-    const handleVisibilityChange = () => {
-      if (document.visibilityState === 'visible') {
-        // Si la página vuelve a ser visible y el canvas debería estar visible pero no lo está
-        if (!isInitializedRef.current && containerRef.current && containerRef.current.clientWidth > 0) {
-          initializeCanvas();
-        }
-      }
-    };
-    
-    // Añadir listener para cambios de tamaño de ventana para detectar cambios en la orientación del móvil
-    const handleWindowResize = () => {
-      checkIfMobile();
-    };
-    
-    window.addEventListener('resize', handleWindowResize);
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-    
-    // Cleanup
     return () => {
-      if (animationFrameIdRef.current !== null) {
-        cancelAnimationFrame(animationFrameIdRef.current);
-      }
-      
-      if (resizeTimeoutRef.current !== null) {
-        window.clearTimeout(resizeTimeoutRef.current);
-      }
-      
-      if (resizeObserverRef.current) {
-        resizeObserverRef.current.disconnect();
-      }
-      
-      window.removeEventListener("resize", handleResize);
-      window.removeEventListener('resize', handleWindowResize);
+      cancelAnimationFrame(animationFrameId);
+      window.removeEventListener("resize", resize);
       container.removeEventListener("pointermove", onPointerMove);
       container.removeEventListener("pointerenter", onPointerEnter);
       container.removeEventListener("pointerleave", onPointerLeave);
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
-      
-      if (rendererRef.current && rendererRef.current.gl.canvas.parentNode) {
-        rendererRef.current.gl.canvas.parentNode.removeChild(rendererRef.current.gl.canvas);
-        rendererRef.current.gl.getExtension("WEBGL_lose_context")?.loseContext();
-      }
-      
-      rendererRef.current = null;
-      programRef.current = null;
-      isInitializedRef.current = false;
+      container.removeChild(gl.canvas);
+      gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, [
-    color,
-    cursorBallColor,
+    themeColor,
+    themeCursorColor,
     speed,
     enableMouseInteraction,
     hoverSmoothness,
@@ -526,46 +317,9 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     clumpFactor,
     cursorBallSize,
     enableTransparency,
-    theme,
-    isMobile,
   ]);
 
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-    
-    if (isMobile) {
-      container.setAttribute('tabindex', '-1');
-      container.style.outline = 'none';
-      container.style.pointerEvents = 'none';
-    } else {
-      container.removeAttribute('tabindex');
-      container.style.outline = '';
-      container.style.pointerEvents = '';
-    }
-  }, [isMobile]);
-
-  return (
-    <div 
-      ref={containerRef} 
-      className={`w-full h-full relative ${isMobile ? 'pointer-events-none' : ''}`}
-    >
-      {isPointerInside && !isMobile && (
-        <div 
-          className={`fixed pointer-events-none text-xs font-bold z-50 ${theme === "light" ? "text-black" : "text-white"}`}
-          style={{
-            left: `${mousePosition.x + 25}px`,
-            top: `${mousePosition.y - 15}px`,
-            textShadow: 'none',
-            transform: 'rotate(-5deg)',
-            transition: 'transform 0.1s ease-out'
-          }}
-        >
-          woops!
-        </div>
-      )}
-    </div>
-  );
+  return <div ref={containerRef} className="w-full h-full relative" />;
 };
 
 export default MetaBalls;

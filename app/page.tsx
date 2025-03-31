@@ -18,6 +18,8 @@ import { projects } from "@/data/projects"
 import { skills } from "@/data/skills"
 import Threads from "@/components/ui/threads-bg"
 import MetaBalls from "@/components/ui/MetaBalls"
+import { TechLogosCarousel } from "@/components/tech-logos-carousel"
+import { useTheme } from "next-themes"
 
 export default function Home() {
   const ref = useRef(null)
@@ -28,6 +30,7 @@ export default function Home() {
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "40%"])
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
+  const { theme, resolvedTheme } = useTheme()
 
   return (
     <main className="relative">
@@ -41,14 +44,11 @@ export default function Home() {
         </motion.div>
 
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-4xl mx-auto text-center p-4 md:p-10">
+          <div className="max-w-4xl mx-auto text-center p-4 md:p-10" >
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-3xl md:text-6xl lg:text-6xl font-bold text-foreground tracking-normal">
-                <AnimatedText text="Hi! I'm Vladislav Titov 👋🏼" />
+              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground">
+                <AnimatedText text="Hi! 👋🏼 I'm Vlad" />
               </h1>
-              <h2 className="text-xl md:text-4xl lg:text-4xl font-semibold text-foreground mb-6 tracking-wide line-clamp-6">
-                <AnimatedText text="Front End Developer" />
-              </h2>
             </motion.div>
 
             <motion.div
@@ -57,8 +57,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <p className="text-lg md:text-xl text-foreground/90 mb-8 max-w-2xl text-left">
-                I'm a passionate front-end developer with more than 6 years of experience as a QA analyst with a focus on creating beautiful, functional, and accessible
-                web experiences.
+                I'm a software engineer with 6+ years of experience in QA, passionate about crafting exceptional web experiences with clean and efficient code.
               </p>
             </motion.div>
 
@@ -113,10 +112,11 @@ export default function Home() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
+              <p className="text-muted-foreground mb-2 leading-relaxed px-4 text-left md:text-center">
+              I'm a dedicated and passionate software engineer with over 6 years of experience as a QA analyst. <br /> My expertise lies in crafting exceptional, functional, and accessible web experiences that delight users.
+              </p>
               <p className="text-muted-foreground mb-8 leading-relaxed px-4 text-left md:text-center">
-                I'm a passionate developer and designer with a focus on creating beautiful, functional, and accessible
-                web experiences. With a background in both design and development, I bridge the gap between aesthetics
-                and functionality.
+              I believe in the importance of writing clean, efficient, and well-documented code. Trying to always look for new opportunities to expand my skill set and stay up-to-date with the latest industry trends.
               </p>
             </motion.div>
           </div>
@@ -141,7 +141,7 @@ export default function Home() {
               >
                 <h3 className="text-2xl font-bold mb-6">My Journey</h3>
                 <p className="text-muted-foreground mb-6 leading-relaxed">
-                  With over 5 years of experience in QA and development, I've worked on a variety of projects
+                  With over 7 years of experience in software development, I've worked on a variety of projects
                   from small business websites to large-scale applications. My approach combines technical expertise
                   with creative problem-solving to deliver solutions that not only look great but also perform
                   exceptionally well.
@@ -156,7 +156,7 @@ export default function Home() {
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8">
                 <div className="text-center">
                   <h4 className="text-3xl font-bold text-primary mb-2">
-                    <AnimatedCounter from={0} to={5} duration={2} />+
+                    <AnimatedCounter from={0} to={6} duration={2} />+
                   </h4>
                   <p className="text-sm text-muted-foreground">Years Experience</p>
                 </div>
@@ -174,9 +174,9 @@ export default function Home() {
                 </div>
                 <div className="text-center">
                   <h4 className="text-3xl font-bold text-primary mb-2">
-                    <AnimatedCounter from={0} to={15} duration={2} />+
+                    <AnimatedCounter from={0} to={2} duration={2} />
                   </h4>
-                  <p className="text-sm text-muted-foreground">Awards Won</p>
+                  <p className="text-sm text-muted-foreground">Cats 😺</p>
                 </div>
               </div>
 
@@ -216,7 +216,7 @@ export default function Home() {
       </section>
 
       {/* Experience Section */}
-      <section id="experience" className="py-12 md:pt-32 bg-muted/30">
+      <section id="experience" className="py-12 md:pt-32 bg-gradient-to-b from-muted/30 to-background ">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <motion.div
@@ -270,7 +270,7 @@ export default function Home() {
       </section>
 
       {/* Skills Section */}
-      <section id="skills" className="py-12 md:pb-32 bg-background">
+      <section id="skills" className="py-12 md:py-32 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <motion.div
@@ -309,6 +309,17 @@ export default function Home() {
               ))}
             </div>
           </div>
+
+          {/* Technology Logos Carousel */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+            className="mt-24"
+          >
+            <TechLogosCarousel />
+          </motion.div>
         </div>
       </section>
 

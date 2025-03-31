@@ -47,6 +47,7 @@ export function AnimatedText({ text }: AnimatedTextProps) {
       variants={container}
       initial="hidden"
       animate="visible"
+      className="text-foreground leading-relaxed"
     >
       {words.map((word, index) => (
         <motion.span key={index} variants={child} style={{ marginRight: "0.25em", display: "inline-block" }}>
