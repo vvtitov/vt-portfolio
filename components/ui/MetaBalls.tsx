@@ -393,6 +393,13 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     const container = containerRef.current;
     if (!container) return;
 
+    // En dispositivos móviles, hacer que el contenedor no sea enfocable
+    if (isMobile) {
+      container.setAttribute('tabindex', '-1');
+      container.style.outline = 'none';
+      container.style.pointerEvents = 'none';
+    }
+
     // Configurar el ResizeObserver para detectar cambios en el contenedor
     const resizeObserver = new ResizeObserver((entries) => {
       if (resizeTimeoutRef.current !== null) {
@@ -520,10 +527,29 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     cursorBallSize,
     enableTransparency,
     theme,
+    isMobile,
   ]);
 
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+    
+    if (isMobile) {
+      container.setAttribute('tabindex', '-1');
+      container.style.outline = 'none';
+      container.style.pointerEvents = 'none';
+    } else {
+      container.removeAttribute('tabindex');
+      container.style.outline = '';
+      container.style.pointerEvents = '';
+    }
+  }, [isMobile]);
+
   return (
-    <div ref={containerRef} className="w-full h-full relative">
+    <div 
+      ref={containerRef} 
+      className={`w-full h-full relative ${isMobile ? 'pointer-events-none' : ''}`}
+    >
       {isPointerInside && !isMobile && (
         <div 
           className={`fixed pointer-events-none text-xs font-bold z-50 ${theme === "light" ? "text-black" : "text-white"}`}
