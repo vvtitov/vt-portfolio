@@ -130,26 +130,6 @@ export default function Home() {
             </motion.div>
 
             <div>
-              <motion.div
-                initial={{ opacity: 0, x: 50 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.5 }}
-              >
-                <h3 className="text-2xl font-bold mb-6">My Journey</h3>
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  With over 7 years of experience in software development, I've worked on a variety of projects
-                  from small business websites to large-scale applications. My approach combines technical expertise
-                  with creative problem-solving to deliver solutions that not only look great but also perform
-                  exceptionally well.
-                </p>
-                <p className="text-muted-foreground mb-8 leading-relaxed">
-                  I'm passionate about creating accessible, user-friendly interfaces that provide seamless experiences
-                  across all devices. When I'm not coding, you can find me exploring new design trends, contributing to
-                  open-source projects, or experimenting with new technologies.
-                </p>
-              </motion.div>
-
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 mb-8">
                 <div className="text-center">
                   <h4 className="text-3xl font-bold text-primary mb-2">
@@ -176,6 +156,25 @@ export default function Home() {
                   <p className="text-sm text-muted-foreground">Cats 😺</p>
                 </div>
               </div>
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5 }}
+              >
+                <p className="text-muted-foreground mb-6 leading-relaxed">
+                  With over 7 years of experience in software development, I've worked on a variety of projects
+                  from small business websites to large-scale applications. My approach combines technical expertise
+                  with creative problem-solving to deliver solutions that not only look great but also perform
+                  exceptionally well.
+                </p>
+                <p className="text-muted-foreground mb-8 leading-relaxed">
+                  I'm passionate about creating accessible, user-friendly interfaces that provide seamless experiences
+                  across all devices. When I'm not coding, you can find me exploring new design trends, contributing to
+                  open-source projects, or experimenting with new technologies.
+                </p>
+              </motion.div>
+
 
               <div className="flex gap-4 items-center justify-center md:justify-start">
                 <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
