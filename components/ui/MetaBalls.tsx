@@ -167,12 +167,9 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
 
   // Función para detectar si es un dispositivo móvil
   const checkIfMobile = () => {
-    // Comprueba si es un dispositivo móvil basado en el ancho de la pantalla o la capacidad táctil
-    const isMobileDevice = 
-      (typeof window !== 'undefined' && window.innerWidth <= 768) || 
-      (typeof navigator !== 'undefined' && ('maxTouchPoints' in navigator && navigator.maxTouchPoints > 0));
-    
-    setIsMobile(isMobileDevice);
+    // Solo considerar como móvil las pantallas pequeñas (sm), permitir interacción en md y lg
+    const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 640;
+    setIsMobile(isSmallScreen);
   };
 
   // Función para inicializar o reinicializar el canvas
@@ -350,7 +347,9 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
 
       // Actualizar posición del cursor con interpolación más precisa
       let targetX: number, targetY: number;
-      if (pointerStateRef.current.inside) {
+      
+      // En móviles, siempre usar el movimiento automático (nunca seguir el cursor)
+      if (pointerStateRef.current.inside && !isMobile) {
         targetX = pointerStateRef.current.x;
         targetY = pointerStateRef.current.y;
       } else {

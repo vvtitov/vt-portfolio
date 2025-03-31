@@ -262,7 +262,7 @@ export default function Home() {
                 </Link>
               </Button>
             </motion.div>
-            <div>
+            <div className="select-none">
               <MetaBalls/>
             </div>
           </div>
