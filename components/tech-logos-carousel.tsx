@@ -163,7 +163,7 @@ export function TechLogosCarousel() {
         
         <motion.div 
           ref={containerRef}
-          className="flex items-center pointer-events-none"
+          className="flex items-center hover:scale-115"
           animate={controls}
         >
           {duplicatedLogos.map((tech, index) => {
@@ -176,7 +176,7 @@ export function TechLogosCarousel() {
                 whileHover={{ y: -5, scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
-                <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 flex items-center justify-center">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 flex items-center justify-center">  
                   <Icon 
                     size={screenSize.isMobile ? "1.75rem" : screenSize.isTablet ? "2rem" : "2.5rem"} 
                     className="text-foreground" 
