@@ -78,6 +78,13 @@ button {
   @apply transition-all duration-200;
 }
 
+/* Prevent horizontal overflow on mobile */
+html, body {
+  overflow-x: hidden;
+  position: relative;
+  width: 100%;
+}
+
 /* Custom cursor styles */
 @media (min-width: 768px) {
   body {

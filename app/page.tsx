@@ -312,7 +312,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-24"
+            className="my-24"
           >
             <TechLogosCarousel />
           </motion.div>

@@ -157,13 +157,13 @@ export function TechLogosCarousel() {
         </h3>
       </div>
       
-      <div className="relative w-full overflow-hidden">
+      <div className="relative w-full overflow-hidden touch-none">
         {/* Left fade effect */}
         <div className="absolute left-0 top-0 bottom-0 w-12 md:w-16 z-10 bg-gradient-to-r from-background to-transparent pointer-events-none"></div>
         
         <motion.div 
           ref={containerRef}
-          className="flex items-center"
+          className="flex items-center pointer-events-none"
           animate={controls}
         >
           {duplicatedLogos.map((tech, index) => {
