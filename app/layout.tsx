@@ -55,7 +55,7 @@ export default function RootLayout({
       <head>
         <Script src="/theme-detector.js" strategy="beforeInteractive" />
       </head>
-      <body className={`${inter.variable} font-sans antialiased`}>
+      <body className={`${inter.variable} font-sans antialiased max-w-[100vw] overflow-x-hidden`}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <MenuProvider>
             <CursorFollower />

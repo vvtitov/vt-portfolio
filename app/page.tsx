@@ -33,7 +33,7 @@ export default function Home() {
   const { theme, resolvedTheme } = useTheme()
 
   return (
-    <main className="relative">
+    <main className="relative overflow-x-hidden w-full">
       <ScrollToTop />
 
       {/* Hero Section */}
@@ -57,7 +57,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <p className="text-lg md:text-xl text-foreground/90 mb-8 max-w-2xl text-left">
-                I'm a software developer with 6+ years of experience in Quality Assurance working for a software factory.
+                I'm a software developer with 6+ years of experience working in Quality Assurance for a international software factory.
               </p>
             </motion.div>
 
