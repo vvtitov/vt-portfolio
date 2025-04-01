@@ -9,6 +9,7 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { CursorFollower } from "@/components/cursor-follower"
 import { MenuProvider } from "@/context/menu-context"
+import { ProjectsProvider } from "@/context/projects-context"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
     type: "website",
     locale: "en_US",
     url: "https://www.vtitov.dev/",
-    title: "Vladislav | Developer",
+    title: "Vladislav Titov | Developer",
     description:
       "Portfolio of a creative developer and designer specializing in building engaging digital experiences with modern web technologies.",
     siteName: "Vladislav Titov",
@@ -55,14 +56,16 @@ export default function RootLayout({
       <head>
         <Script src="/theme-detector.js" strategy="beforeInteractive" />
       </head>
-      <body className={`${inter.variable} font-sans antialiased max-w-[100vw] overflow-x-hidden`}>
+      <body className={`${inter.variable} font-sans antialiased max-w-[100vw] overflow-x-hidden`} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <MenuProvider>
-            <CursorFollower />
-            <Navbar />
-            {children}
-            <Footer />
-            <Toaster />
+            <ProjectsProvider>
+              <CursorFollower />
+              <Navbar />
+              {children}
+              <Footer />
+              <Toaster />
+            </ProjectsProvider>
           </MenuProvider>
         </ThemeProvider>
       </body>
