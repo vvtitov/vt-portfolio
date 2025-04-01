@@ -67,9 +67,9 @@ float lineFn(vec2 st, float width, float perc, float offset, vec2 mouse, float t
     float amplitude_normal = smoothstep(split_point, 0.7, st.x);
     float amplitude_strength = 0.5;
     float finalAmplitude = amplitude_normal * amplitude_strength
-                           * amplitude * (1.0 + (mouse.y - 0.5) * 0.2);
+                           * amplitude * (1.0 + (mouse.y - 0.5) * 0.5);
 
-    float time_scaled = time / 10.0 + (mouse.x - 0.5) * 1.0;
+    float time_scaled = time / 10.0 + (mouse.x - 0.5) * 2.0;
     float blur = smoothstep(split_point, split_point + 0.05, st.x) * perc;
 
     float xnoise = mix(
@@ -78,7 +78,8 @@ float lineFn(vec2 st, float width, float perc, float offset, vec2 mouse, float t
         st.x * 0.3
     );
 
-    float y = 0.5 + (perc - 0.5) * distance + xnoise / 2.0 * finalAmplitude;
+    float y = 0.5 + (perc - 0.5) * distance + xnoise / 2.0 * finalAmplitude 
+              + (mouse.y - 0.5) * 0.1 * (1.0 - perc);
 
     float line_start = smoothstep(
         y + (width / 2.0) + (u_line_blur * pixel(1.0, iResolution.xy) * blur),
@@ -101,12 +102,21 @@ float lineFn(vec2 st, float width, float perc, float offset, vec2 mouse, float t
 
 void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     vec2 uv = fragCoord / iResolution.xy;
-
+    
+    // Añadir efecto de "atracción" hacia el cursor
+    vec2 mouseEffect = uv - uMouse;
+    float mouseDistance = length(mouseEffect);
+    float mouseInfluence = 0.1 / (mouseDistance + 0.1);
+    
     float line_strength = 1.0;
     for (int i = 0; i < u_line_count; i++) {
         float p = float(i) / float(u_line_count);
+        // Aplicar la influencia del mouse a las coordenadas
+        vec2 distortedUV = uv;
+        distortedUV -= (mouseEffect * mouseInfluence * 0.05 * (1.0 - p));
+        
         line_strength *= (1.0 - lineFn(
-            uv,
+            distortedUV,
             u_line_width * pixel(1.0, iResolution.xy) * (1.0 - p),
             p,
             (PI * 1.0) * p,
@@ -118,6 +128,7 @@ void mainImage(out vec4 fragColor, in vec2 fragCoord) {
     }
 
     float colorVal = 1.0 - line_strength;
+    // Eliminar el brillo alrededor del cursor
     fragColor = vec4(uColor * colorVal, colorVal);
 }
 
@@ -128,8 +139,8 @@ void main() {
 
 const Threads: React.FC<ThreadsProps> = ({
   color = [1, 1, 1],
-  amplitude = 0.5,
-  distance = 0.9,
+  amplitude = 0.9,
+  distance = 0.5,
   enableMouseInteraction = true,
   ...rest
 }) => {
@@ -198,14 +209,17 @@ const Threads: React.FC<ThreadsProps> = ({
     function handleMouseLeave() {
       targetMouse = [0.5, 0.5];
     }
+    
+    // Usar eventos en el documento para capturar el movimiento del mouse incluso cuando está sobre otros elementos
     if (enableMouseInteraction) {
-      container.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mousemove", handleMouseMove);
       container.addEventListener("mouseleave", handleMouseLeave);
     }
 
     function update(t: number) {
       if (enableMouseInteraction) {
-        const smoothing = 0.05;
+        // Aumentar el factor de suavizado para una respuesta más rápida
+        const smoothing = 0.1;
         currentMouse[0] += smoothing * (targetMouse[0] - currentMouse[0]);
         currentMouse[1] += smoothing * (targetMouse[1] - currentMouse[1]);
         program.uniforms.uMouse.value[0] = currentMouse[0];
@@ -227,7 +241,7 @@ const Threads: React.FC<ThreadsProps> = ({
       window.removeEventListener("resize", resize);
 
       if (enableMouseInteraction) {
-        container.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mousemove", handleMouseMove);
         container.removeEventListener("mouseleave", handleMouseLeave);
       }
       if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
