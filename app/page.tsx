@@ -20,6 +20,8 @@ import Threads from "@/components/ui/threads-bg"
 import MetaBalls from "@/components/ui/MetaBalls"
 import { TechLogosCarousel } from "@/components/tech-logos-carousel"
 import { useTheme } from "next-themes"
+import { ProjectsProvider } from "@/context/projects-context"
+import { FilteredProjects } from "@/components/filtered-projects"
 
 export default function Home() {
   const ref = useRef(null)
@@ -113,7 +115,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.2 }}
             >
               <p className="text-muted-foreground mb-2 leading-relaxed px-4 text-left md:text-center">
-               My expertise lies in crafting exceptional, functional, and accessible web experiences that delight users.
+                Based in Buenos Aires, Argentina for more than 25 years, my expertise lies in crafting exceptional, functional, and accessible web experiences that delight users.
               </p>
             </motion.div>
           </div>
@@ -163,10 +165,9 @@ export default function Home() {
                 transition={{ duration: 0.5 }}
               >
                 <p className="text-muted-foreground mb-6 leading-relaxed">
-                  With over 7 years of experience in software development, I've worked on a variety of projects
+                  With over 8 years of total experience in software development and customer support, I've worked on a variety of projects
                   from small business websites to large-scale applications. My approach combines technical expertise
-                  with creative problem-solving to deliver solutions that not only look great but also perform
-                  exceptionally well.
+                  with creative problem-solving to deliver solutions that escalate the business value.
                 </p>
                 <p className="text-muted-foreground mb-8 leading-relaxed">
                   I'm passionate about creating accessible, user-friendly interfaces that provide seamless experiences
@@ -312,7 +313,7 @@ export default function Home() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 0.5, delay: 0.3 }}
-            className="my-24"
+            className="mt-24"
           >
             <TechLogosCarousel />
           </motion.div>
@@ -321,64 +322,55 @@ export default function Home() {
 
       {/* Projects Section */}
       <section id="projects" className="py-24 md:py-32 bg-muted/30">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">
-                Featured <span className="text-primary">Projects</span>
-              </h2>
-            </motion.div>
+        <ProjectsProvider>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="max-w-3xl mx-auto text-center mb-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5 }}
+              >
+                <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">
+                  Featured <span className="text-primary">Projects</span>
+                </h2>
+              </motion.div>
 
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <p className="text-muted-foreground mb-8 leading-relaxed">
-                A selection of my recent work showcasing my skills in design, development, and animation.
-              </p>
-            </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+              >
+                <p className="text-muted-foreground mb-8 leading-relaxed">
+                  A selection of my recent work showcasing my skills in design, development, and animation.
+                </p>
+              </motion.div>
 
-            <ProjectFilter />
+              <ProjectFilter />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              <FilteredProjects />
+            </div>
+
+            <div className="mt-16 text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5 }}
+              >
+                <Button asChild variant="outline" className="group">
+                  <Link href="/projects" className="flex items-center">
+                    View All Projects
+                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </motion.div>
+            </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {projects.map((project, index) => (
-              <ProjectCard
-                key={project.id}
-                title={project.title}
-                description={project.description}
-                tags={project.tags}
-                imageSrc={project.imageSrc}
-                link={project.link}
-                githubLink={project.githubLink}
-                delay={0.1 * (index + 1)}
-              />
-            ))}
-          </div>
-
-          <div className="mt-16 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5 }}
-            >
-              <Button asChild variant="outline" className="group">
-                <Link href="/projects" className="flex items-center">
-                  View All Projects
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                </Link>
-              </Button>
-            </motion.div>
-          </div>
-        </div>
+        </ProjectsProvider>
       </section>
 
       {/* Testimonials Section */}
@@ -425,12 +417,13 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-muted-foreground italic mb-6 flex-grow">
-                  "An exceptional developer who consistently delivers high-quality work. Their attention to detail and
-                  creative problem-solving skills made our project a success."
+                  "I am very happy with Vlad's work in the design and development of my apartments website. 
+                  He was able to capture exactly what I needed, creating a functional, attractive and easy to use site for both me and my guests. 
+                  His professionalism, creativity and attention to detail made the process smooth and seamless. I would definitely recommend him to anyone looking for a committed and efficient web developer."
                 </p>
                 <div>
-                  <p className="font-semibold">Sarah Johnson</p>
-                  <p className="text-sm text-muted-foreground">CEO, TechStart Inc.</p>
+                  <p className="font-semibold">Yasmin A.</p>
+                  <p className="text-sm text-muted-foreground">Owner, Luna Huapi</p>
                 </div>
               </div>
             </motion.div>
@@ -451,12 +444,13 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-muted-foreground italic mb-6 flex-grow">
-                  "Working with this developer was a pleasure. They understood our vision immediately and transformed it
-                  into a beautiful, functional website that exceeded our expectations."
+                  "Working with Vlad was a pleasure. He understood my vision immediately and transformed it into a beautiful, functional website that exceeded my expectations.
+                  He also developed a website for my label Essence, which was a great experience and I love the result.
+                  I've worked with many developers, but Vlad is one of the best I've had the privilege of working with."
                 </p>
                 <div>
-                  <p className="font-semibold">Michael Chen</p>
-                  <p className="text-sm text-muted-foreground">Marketing Director, Innovate Solutions</p>
+                  <p className="font-semibold">Juan Elvadin</p>
+                  <p className="text-sm text-muted-foreground">Artist & DJ, Essence</p>
                 </div>
               </div>
             </motion.div>
@@ -477,12 +471,11 @@ export default function Home() {
                   ))}
                 </div>
                 <p className="text-muted-foreground italic mb-6 flex-grow">
-                  "Not only is their technical skill impressive, but their communication and project management made the
-                  entire process smooth and stress-free. I highly recommend their services."
+                  "Vladislav is a proactive, fast learner, and a true team player. I had the pleasure of working with him and was always impressed by his ability to adapt quickly, communicate assertively, and collaborate effectively. His respectful and solution-oriented approach made him a valuable addition to our team. Any company would be lucky to have him!"
                 </p>
                 <div>
-                  <p className="font-semibold">Emily Rodriguez</p>
-                  <p className="text-sm text-muted-foreground">Founder, Design Collective</p>
+                  <p className="font-semibold">Noelia Conti</p>
+                  <p className="text-sm text-muted-foreground">QA Engineer, Collegue</p>
                 </div>
               </div>
             </motion.div>

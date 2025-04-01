@@ -1,17 +1,17 @@
 "use client"
 
-import { useState } from "react"
 import { motion } from "framer-motion"
 import { Button } from "@/components/ui/button"
+import { useProjects } from "@/context/projects-context"
 
 export function ProjectFilter() {
-  const [activeFilter, setActiveFilter] = useState("all")
+  const { activeFilter, setActiveFilter } = useProjects()
 
   const filters = [
     { id: "all", label: "All" },
     { id: "web", label: "Web Development" },
     { id: "ui", label: "UI/UX Design" },
-    { id: "mobile", label: "Mobile" },
+    { id: "ai", label: "Artificial Intelligence" },  
   ]
 
   return (
@@ -32,4 +32,3 @@ export function ProjectFilter() {
     </div>
   )
 }
-
