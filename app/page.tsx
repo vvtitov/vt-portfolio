@@ -48,8 +48,8 @@ export default function Home() {
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center p-4 md:p-10">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground">
-                <AnimatedText text="Hello! 👋🏼 I'm Vladislav" />
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
+                <AnimatedText text="Hello! 👋🏼 I'm Vladislav Titov" />
               </h1>
             </motion.div>
 
@@ -58,8 +58,9 @@ export default function Home() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <p className="text-lg md:text-xl text-foreground/90 mb-8 max-w-2xl text-left">
-                I'm a software developer with 6+ years of experience working in Quality Assurance for a international software factory.
+              <p className="text-lg md:text-xl text-foreground/90 mb-8 max-w-2xl text-left text-pretty">
+                I'm a <span className="italic">software developer</span> with <span className="font-bold">6+ years of experience</span> in Quality Assurance.
+                I've worked with a wide range of clients and technologies, and I'm always looking for new challenges and opportunities to grow.
               </p>
             </motion.div>
 
