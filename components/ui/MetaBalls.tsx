@@ -30,7 +30,12 @@ function useIsMobile() {
   useEffect(() => {
     // Función para verificar si la pantalla es pequeña (móvil)
     const checkIfMobile = () => {
-      setIsMobile(window.innerWidth < 768); // 768px es el breakpoint típico para tablets/móviles
+      const isMobileDevice = 
+        window.innerWidth < 768 || 
+        navigator.maxTouchPoints > 0 || 
+        /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      
+      setIsMobile(isMobileDevice);
     };
 
     // Comprobar al inicio
@@ -163,18 +168,30 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
   enableTransparency = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { theme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useTheme();
   const isMobile = useIsMobile(); // Detectar si es un dispositivo móvil
+  const [isInitialized, setIsInitialized] = useState(false);
   
   // Determine the color based on the theme
   const themeColor = resolvedTheme === "light" ? "#000000" : "#ffffff";
   const themeCursorColor = resolvedTheme === "light" ? "#000000" : "#ffffff";
 
+  // No renderizar el componente en dispositivos móviles
+  if (isMobile) {
+    return null;
+  }
+
   useEffect(() => {
+    // Asegurarse de que el componente solo se inicialice en el cliente
+    if (typeof window === 'undefined') return;
+    
     const container = containerRef.current;
     if (!container) return;
 
-    const dpr = 1;
+    // Marcar como inicializado
+    setIsInitialized(true);
+
+    const dpr = window.devicePixelRatio || 1;
     const renderer = new Renderer({
       dpr,
       alpha: true,
@@ -331,7 +348,9 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         container.removeEventListener("pointerenter", onPointerEnter);
         container.removeEventListener("pointerleave", onPointerLeave);
       }
-      container.removeChild(gl.canvas);
+      if (container.contains(gl.canvas)) {
+        container.removeChild(gl.canvas);
+      }
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, [
@@ -345,7 +364,8 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     clumpFactor,
     cursorBallSize,
     enableTransparency,
-    isMobile, // Añadir isMobile como dependencia
+    isMobile,
+    resolvedTheme,
   ]);
 
   return <div ref={containerRef} className="w-full h-full relative" />;
