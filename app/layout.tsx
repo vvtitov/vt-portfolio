@@ -11,6 +11,7 @@ import { CursorFollower } from "@/components/cursor-follower"
 import { MenuProvider } from "@/context/menu-context"
 import { ProjectsProvider } from "@/context/projects-context"
 
+// Cargar CursorFollower dinámicamente solo en el cliente
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",

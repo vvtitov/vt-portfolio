@@ -4,17 +4,23 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 
 export function CursorFollower() {
+  // Inicializar estados con valores por defecto
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isVisible, setIsVisible] = useState(false)
+  const [isMounted, setIsMounted] = useState(false)
 
   useEffect(() => {
+    // Marcar que el componente está montado (solo en el cliente)
+    setIsMounted(true)
+
     // Función para detectar si es un dispositivo móvil
     const isMobileDevice = () => {
+      if (typeof window === "undefined") return true // Por defecto, asumir móvil en SSR
+      
       return (
-        typeof window !== "undefined" && 
-        (window.innerWidth <= 768 || 
-         navigator.maxTouchPoints > 0 || 
-         /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
+        window.innerWidth <= 768 || 
+        (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0) || 
+        (typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
       )
     }
 
@@ -34,7 +40,8 @@ export function CursorFollower() {
     }
   }, [])
 
-  if (!isVisible) return null
+  // No renderizar nada durante SSR o si no es visible
+  if (!isMounted || !isVisible) return null
 
   return (
     <>

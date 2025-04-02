@@ -1,5 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
-import { useTheme } from "next-themes";
+import React, { useEffect, useRef } from "react";
 import {
   Renderer,
   Program,
@@ -9,6 +8,7 @@ import {
   Vec3,
   Camera,
 } from "ogl";
+import { useIsMobile } from "@/hooks/use-mobile";
 
 type MetaBallsProps = {
   color?: string;
@@ -22,34 +22,6 @@ type MetaBallsProps = {
   cursorBallColor?: string;
   enableTransparency?: boolean;
 };
-
-// Hook personalizado para detectar si es un dispositivo móvil
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    // Función para verificar si la pantalla es pequeña (móvil)
-    const checkIfMobile = () => {
-      const isMobileDevice = 
-        window.innerWidth < 768 || 
-        navigator.maxTouchPoints > 0 || 
-        /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-      
-      setIsMobile(isMobileDevice);
-    };
-
-    // Comprobar al inicio
-    checkIfMobile();
-
-    // Comprobar cuando cambie el tamaño de la ventana
-    window.addEventListener('resize', checkIfMobile);
-    
-    // Limpiar el event listener
-    return () => window.removeEventListener('resize', checkIfMobile);
-  }, []);
-
-  return isMobile;
-}
 
 function parseHexColor(hex: string): [number, number, number] {
   const c = hex.replace("#", "");
@@ -158,40 +130,28 @@ type BallParams = {
 };
 
 const MetaBalls: React.FC<MetaBallsProps> = ({
-  speed = 0.4,
+  color = "#ffffff",
+  speed = 0.3,
   enableMouseInteraction = true,
-  hoverSmoothness = 0.07,
-  animationSize = 15,
+  hoverSmoothness = 0.05,
+  animationSize = 30,
   ballCount = 15,
-  clumpFactor = 1.2,
-  cursorBallSize = 1.3,
-  enableTransparency = true,
+  clumpFactor = 1,
+  cursorBallSize = 3,
+  cursorBallColor = "#ffffff",
+  enableTransparency = false,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const { resolvedTheme } = useTheme();
-  const isMobile = useIsMobile(); // Detectar si es un dispositivo móvil
-  const [isInitialized, setIsInitialized] = useState(false);
+  const isMobile = useIsMobile();
   
-  // Determine the color based on the theme
-  const themeColor = resolvedTheme === "light" ? "#000000" : "#ffffff";
-  const themeCursorColor = resolvedTheme === "light" ? "#000000" : "#ffffff";
-
-  // No renderizar el componente en dispositivos móviles
-  if (isMobile) {
-    return null;
-  }
+  // Disable mouse interaction on mobile devices
+  const shouldEnableMouseInteraction = isMobile ? false : enableMouseInteraction;
 
   useEffect(() => {
-    // Asegurarse de que el componente solo se inicialice en el cliente
-    if (typeof window === 'undefined') return;
-    
     const container = containerRef.current;
     if (!container) return;
 
-    // Marcar como inicializado
-    setIsInitialized(true);
-
-    const dpr = window.devicePixelRatio || 1;
+    const dpr = 1;
     const renderer = new Renderer({
       dpr,
       alpha: true,
@@ -212,8 +172,8 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     camera.position.z = 1;
 
     const geometry = new Triangle(gl);
-    const [r1, g1, b1] = parseHexColor(themeColor);
-    const [r2, g2, b2] = parseHexColor(themeCursorColor);
+    const [r1, g1, b1] = parseHexColor(color);
+    const [r2, g2, b2] = parseHexColor(cursorBallColor);
 
     const metaBallsUniform: Vec3[] = [];
     for (let i = 0; i < 50; i++) {
@@ -231,7 +191,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
         iCursorColor: { value: new Vec3(r2, g2, b2) },
         iAnimationSize: { value: animationSize },
         iBallCount: { value: ballCount },
-        iCursorBallSize: { value: isMobile ? 0 : cursorBallSize }, // Ocultar el cursor ball en móviles
+        iCursorBallSize: { value: cursorBallSize },
         iMetaBalls: { value: metaBallsUniform },
         iClumpFactor: { value: clumpFactor },
         enableTransparency: { value: enableTransparency },
@@ -279,7 +239,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     resize();
 
     function onPointerMove(e: PointerEvent) {
-      if (!enableMouseInteraction || isMobile || !container) return; // No procesar en móviles
+      if (!shouldEnableMouseInteraction || !container) return;
       const rect = container.getBoundingClientRect();
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
@@ -287,20 +247,16 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       pointerY = (1 - py / rect.height) * gl.canvas.height;
     }
     function onPointerEnter() {
-      if (!enableMouseInteraction || isMobile) return; // No procesar en móviles
+      if (!shouldEnableMouseInteraction) return;
       pointerInside = true;
     }
     function onPointerLeave() {
-      if (!enableMouseInteraction || isMobile) return; // No procesar en móviles
+      if (!shouldEnableMouseInteraction) return;
       pointerInside = false;
     }
-
-    // Solo añadir event listeners si no es móvil
-    if (!isMobile) {
-      container.addEventListener("pointermove", onPointerMove);
-      container.addEventListener("pointerenter", onPointerEnter);
-      container.addEventListener("pointerleave", onPointerLeave);
-    }
+    container.addEventListener("pointermove", onPointerMove);
+    container.addEventListener("pointerenter", onPointerEnter);
+    container.addEventListener("pointerleave", onPointerLeave);
 
     const startTime = performance.now();
     let animationFrameId: number;
@@ -321,7 +277,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       }
 
       let targetX: number, targetY: number;
-      if (pointerInside && !isMobile) { // Solo seguir el puntero si no es móvil
+      if (pointerInside) {
         targetX = pointerX;
         targetY = pointerY;
       } else {
@@ -343,32 +299,27 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     return () => {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("resize", resize);
-      if (!isMobile) { // Solo eliminar event listeners si no es móvil
-        container.removeEventListener("pointermove", onPointerMove);
-        container.removeEventListener("pointerenter", onPointerEnter);
-        container.removeEventListener("pointerleave", onPointerLeave);
-      }
-      if (container.contains(gl.canvas)) {
-        container.removeChild(gl.canvas);
-      }
+      container.removeEventListener("pointermove", onPointerMove);
+      container.removeEventListener("pointerenter", onPointerEnter);
+      container.removeEventListener("pointerleave", onPointerLeave);
+      container.removeChild(gl.canvas);
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, [
-    themeColor,
-    themeCursorColor,
+    color,
+    cursorBallColor,
     speed,
-    enableMouseInteraction,
+    shouldEnableMouseInteraction,
     hoverSmoothness,
     animationSize,
     ballCount,
     clumpFactor,
     cursorBallSize,
     enableTransparency,
-    isMobile,
-    resolvedTheme,
   ]);
 
-  return <div ref={containerRef} className="w-full h-full relative" />;
+  // If on mobile, add a class to hide the component or render null if needed
+  return <div ref={containerRef} className={`w-full h-full relative ${isMobile ? 'pointer-events-none' : ''}`} />;
 };
 
 export default MetaBalls;
