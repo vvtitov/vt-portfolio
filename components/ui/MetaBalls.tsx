@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Renderer,
   Program,
@@ -9,6 +9,7 @@ import {
   Camera,
 } from "ogl";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useTheme } from "next-themes";
 
 type MetaBallsProps = {
   color?: string;
@@ -134,22 +135,36 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
   speed = 0.3,
   enableMouseInteraction = true,
   hoverSmoothness = 0.05,
-  animationSize = 30,
+  animationSize = 20,
   ballCount = 15,
   clumpFactor = 1,
-  cursorBallSize = 3,
+  cursorBallSize = 2,
   cursorBallColor = "#ffffff",
-  enableTransparency = false,
+  enableTransparency = true,
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
+  const { theme, resolvedTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  
+  // Set mounted to true on client side
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+  
+  // Determine if we're in dark mode
+  const isDarkTheme = mounted && (resolvedTheme === "dark" || theme === "dark");
+  
+  // Set colors based on theme
+  const themeColor = isDarkTheme ? color : "#333333";
+  const themeCursorColor = isDarkTheme ? cursorBallColor : "#000000";
   
   // Disable mouse interaction on mobile devices
   const shouldEnableMouseInteraction = isMobile ? false : enableMouseInteraction;
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container || !mounted) return;
 
     const dpr = 1;
     const renderer = new Renderer({
@@ -172,8 +187,8 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     camera.position.z = 1;
 
     const geometry = new Triangle(gl);
-    const [r1, g1, b1] = parseHexColor(color);
-    const [r2, g2, b2] = parseHexColor(cursorBallColor);
+    const [r1, g1, b1] = parseHexColor(themeColor);
+    const [r2, g2, b2] = parseHexColor(themeCursorColor);
 
     const metaBallsUniform: Vec3[] = [];
     for (let i = 0; i < 50; i++) {
@@ -306,8 +321,8 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, [
-    color,
-    cursorBallColor,
+    themeColor,
+    themeCursorColor,
     speed,
     shouldEnableMouseInteraction,
     hoverSmoothness,
@@ -316,7 +331,13 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     clumpFactor,
     cursorBallSize,
     enableTransparency,
+    mounted,
   ]);
+
+  // If not mounted yet, return null to avoid hydration issues
+  if (!mounted) {
+    return <div ref={containerRef} className="w-full h-full relative" />;
+  }
 
   // If on mobile, add a class to hide the component or render null if needed
   return <div ref={containerRef} className={`w-full h-full relative ${isMobile ? 'pointer-events-none' : ''}`} />;
