@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     ],
   },
   icons: {
-    icon: "/favicon.ico",
+    icon: "/icon.ico",
   },
   manifest: "/manifest.json",
 }
@@ -56,8 +56,7 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <Script src="/theme-detector.js" strategy="beforeInteractive" />
-        <link rel="icon" href="/favicon.ico" type="image/x-icon" />
-        <link rel="icon" href="/icon.png" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/icon.ico" type="image/x-icon" />
       </head>
       <body className={`${inter.variable} font-sans antialiased max-w-[100vw] overflow-x-hidden`} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
