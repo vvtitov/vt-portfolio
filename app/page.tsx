@@ -423,7 +423,7 @@ export default function Home() {
                   His professionalism, creativity and attention to detail made the process smooth and seamless. I would definitely recommend him to anyone looking for a committed and efficient web developer."
                 </p>
                 <div>
-                  <p className="font-semibold">Yasmin A.</p>
+                  <p className="font-semibold">Yasmin N.</p>
                   <p className="text-sm text-muted-foreground">Owner, Luna Huapi</p>
                 </div>
               </div>
