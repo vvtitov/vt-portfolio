@@ -15,7 +15,16 @@ import {
   SiFigma,
   SiGit,
   SiNodedotjs,
-  SiVite
+  SiVite,
+  SiDocker,
+  SiJenkins,
+  SiJira,
+  SiVercel,
+  SiSupabase,
+  SiFirebase,
+  SiPostgresql,
+  SiMysql,
+  SiMongodb,
 } from "react-icons/si"
 
 // Define the technology logos with their names and icon components
@@ -31,7 +40,16 @@ const techLogos = [
   { name: "Tailwind CSS", icon: SiTailwindcss },
   { name: "Framer Motion", icon: SiFramer },
   { name: "Figma", icon: SiFigma },
-  { name: "Git", icon: SiGit }
+  { name: "Git", icon: SiGit },
+  { name: "Docker", icon: SiDocker },
+  { name: "Jenkins", icon: SiJenkins },
+  { name: "Jira", icon: SiJira },
+  { name: "Vercel", icon: SiVercel }, 
+  { name: "Supabase", icon: SiSupabase },
+  { name: "Firebase", icon: SiFirebase },
+  { name: "PostgreSQL", icon: SiPostgresql },
+  { name: "MongoDB", icon: SiMongodb },
+  { name: "MySQL", icon: SiMysql },
 ]
 
 export function TechLogosCarousel() {

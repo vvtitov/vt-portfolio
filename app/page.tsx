@@ -4,9 +4,8 @@ import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, ExternalLink, Github, Linkedin, Mail, Download } from "lucide-react"
+import { ArrowRight, ExternalLink, Github, Linkedin, Mail, Download, ArrowDownRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ProjectCard } from "@/components/project-card"
 import { SkillBar } from "@/components/skill-bar"
 import { ContactForm } from "@/components/contact-form"
 import { AnimatedCounter } from "@/components/animated-counter"
@@ -50,8 +49,9 @@ export default function Home() {
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center p-4 md:p-10">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-                <AnimatedText text="Hello! 👋🏼 I'm Vladislav Titov" />
+              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
+                <AnimatedText text="Hello!👋🏼" />
+                <AnimatedText text="I'm Vladislav Titov" />
               </h1>
             </motion.div>
 
@@ -75,7 +75,7 @@ export default function Home() {
               <Button asChild size="lg" className="group">
                 <Link href="#projects">
                   View My Work
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
+                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 mt-1" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-secondary-foreground text-foreground hover:bg-white/40 dark:hover:bg-black/20 bg-secondary/20">

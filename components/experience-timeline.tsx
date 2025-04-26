@@ -2,7 +2,7 @@
 
 import { motion } from "framer-motion"
 import { Briefcase } from "lucide-react"
-import SpotlightCard from "../app/components/ui/SpotlightCard/SpotlightCard"
+import SpotlightCard from "./ui/spotlight-card"
 
 export function ExperienceTimeline() {
   const experiences = [

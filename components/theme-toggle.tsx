@@ -21,9 +21,18 @@ export function ThemeToggle() {
   // Usar el tema real si está montado, o el tema predeterminado si no
   const currentTheme = mounted ? theme : defaultTheme
 
-  // No renderizar nada hasta que el componente esté montado para evitar problemas de hidratación
+  // Renderizar un placeholder con las mismas dimensiones mientras se monta
   if (!mounted) {
-    return null
+    return (
+      <Button
+        variant="link"
+        size="icon"
+        aria-label="Loading theme toggle"
+        className="opacity-0"
+      >
+        <div className="relative h-5 w-5"></div>
+      </Button>
+    )
   }
 
   return (
