@@ -45,7 +45,7 @@ export function Footer() {
 
           <div>
             <h3 className="text-sm font-medium uppercase tracking-wider mb-4">Navigation</h3>
-            <ul className="space-y-2">
+            <ul className="space-y-2 md:space-y-0 md:flex md:flex-row md:gap-4 md:items-center">
               <li>
                 <Link href="#about" className="text-muted-foreground hover:text-foreground transition-colors">
                   About
@@ -73,42 +73,11 @@ export function Footer() {
               </li>
             </ul>
           </div>
-
-          <div>
-            <h3 className="text-sm font-medium uppercase tracking-wider mb-4">Services</h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Web Development
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  UI/UX Design
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Frontend Development
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Responsive Design
-                </Link>
-              </li>
-              <li>
-                <Link href="#" className="text-muted-foreground hover:text-foreground transition-colors">
-                  Animation & Interaction
-                </Link>
-              </li>
-            </ul>
-          </div>
         </div>
 
         <div className="border-t border-border mt-12 pt-8 flex flex-col md:flex-row justify-center items-center">
           <p className="text-muted-foreground text-sm">
-            &copy; {new Date().getFullYear()}. All rights reserved.
+            Developed by Vladislav Titov <br /> &copy; {new Date().getFullYear()}. All rights reserved.
           </p>
         </div>
       </div>
