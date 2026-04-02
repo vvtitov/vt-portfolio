@@ -237,7 +237,7 @@ export default function Home() {
       </section>
 
       {/* Technologies Section */}
-      <section className="py-6 md:py-8 bg-background">
+      <section className="pt-10 pb-12 md:py-8 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           {/* Technology Logos Carousel */}
           <motion.div
