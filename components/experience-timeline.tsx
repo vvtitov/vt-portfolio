@@ -8,21 +8,36 @@ export function ExperienceTimeline() {
   const experiences = [
     {
       id: 1,
-      role: "Front-end Developer",
+      role: "Frontend Developer",
       company: "Three Mangos Agency",
-      period: "2024 - Present",
+      period: "April 2024 – Present",
       description:
-        "Lead the frontend development team in creating responsive, accessible web applications using React and Next.js. Implemented performance optimizations resulting in a 40% improvement in load times.",
-      technologies: ["React", "Next.js", "TypeScript", "Tailwind CSS", "Framer Motion", "Git", "Git Actions", ],
+        "Built mobile-first sites with React and stacks including Next.js, Vite, TanStack, and T3. Delivered system designs with CSS frameworks, performance work (lazy loading, code splitting, fewer HTTP requests), and global state with Redux and Zustand. Integrated REST APIs with auth and error handling; connected frontends to Firebase, Supabase, and SQL/NoSQL backends. Wrote tests with Jest and Playwright, set up CI/CD in Azure DevOps from scratch, added i18n (react-intl / i18next), and analytics (Google Analytics, Hotjar, tracking). Led live demos with stakeholders.",
+      technologies: [
+        "React",
+        "Next.js",
+        "Vite",
+        "TanStack",
+        "T3 Stack",
+        "Redux",
+        "Zustand",
+        "REST",
+        "Firebase",
+        "Supabase",
+        "Jest",
+        "Playwright",
+        "Azure DevOps",
+        "i18n",
+      ],
     },
     {
       id: 2,
       role: "QA Analyst",
       company: "MediaMonks",
-      period: "2018 - 2024",
+      period: "December 2018 – March 2024",
       description:
-        "Performed functional and visual testing for web and mobile apps. Shift-lefted testing processes to improve efficiency. Created and maintained documentation, test plans, and API tests with Postman. Executed SQL queries for database testing and helped with Playwright E2E tests. Conducted stakeholder demos and worked with Jira, X-Ray and Agile methodologies.",
-      technologies: ["JavaScript","Postman", "SQL", "Playwright", "Jira", "X-Ray", "Agile", "BrowserStack" ],
+        "Functional and visual testing on web and mobile. Shift-left testing, strong documentation, test plans and cases. Automated APIs with Postman; SQL for data integrity; helped maintain Playwright E2E. Led demos and defect reviews with stakeholders. Jira, X-Ray, and Agile delivery.",
+      technologies: ["Postman", "SQL", "Playwright", "Jira", "X-Ray", "Agile", "BrowserStack"],
     },
     {
       id: 3,
