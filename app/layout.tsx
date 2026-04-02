@@ -24,6 +24,20 @@ export const metadata: Metadata = {
   keywords: ["developer", "designer", "portfolio", "web development", "frontend", "UI/UX", "React", "Next.js"],
   authors: [{ name: "Vladislav" }],
   creator: "Vladislav",
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-snippet": -1,
+      "max-image-preview": "large",
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -40,6 +54,13 @@ export const metadata: Metadata = {
         alt: "Vladislav Titov Preview",
       },
     ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Vladislav Titov | Developer",
+    description:
+      "Portfolio of a creative developer and designer specializing in building engaging digital experiences with modern web technologies.",
+    images: ["/og-image.jpg"],
   },
   icons: {
     icon: "/icon.ico",

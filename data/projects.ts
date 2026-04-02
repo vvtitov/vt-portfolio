@@ -40,7 +40,7 @@ export const projects = [
   },
   {
     id: 5,
-    title: "Iana Muebles",
+    title: "Iana Furnitures",
     description: "A modern website for a furniture brand focused on showcasing products with a clean and polished visual experience.",
     tags: ["Vite", "React", "TypeScript", "Tailwind CSS", "Framer Motion", "GSAP", "Shadcn", "i18n", "Supabase", "Playwright"],
     imageSrc: "/images/projects/ianamuebles.webp",

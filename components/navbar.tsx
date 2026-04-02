@@ -73,12 +73,12 @@ export function Navbar() {
 
     const updateOnScroll = () => {
       const currentScrollY = window.scrollY;
-      
+
       setIsScrolled((previous) => {
         const nextValue = currentScrollY > 10
         return previous === nextValue ? previous : nextValue
       })
-      
+
       if (currentScrollY < 10) {
         setIsVisible((previous) => (previous ? previous : true))
       } else if (currentScrollY < lastScrollY.current) {
@@ -86,7 +86,7 @@ export function Navbar() {
       } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
         setIsVisible((previous) => (previous ? false : previous))
       }
-      
+
       lastScrollY.current = currentScrollY;
 
       if (isHomePage) {
@@ -148,9 +148,8 @@ export function Navbar() {
 
   return (
     <header
-      className={`navbar-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-4"
-      } ${isVisible && !isMenuOpen ? "translate-y-0" : isMenuOpen ? "translate-y-0" : "-translate-y-full"}`}
+      className={`navbar-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-4"
+        } ${isVisible && !isMenuOpen ? "translate-y-0" : isMenuOpen ? "translate-y-0" : "-translate-y-full"}`}
       style={{ pointerEvents: "auto" }}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -171,9 +170,8 @@ export function Navbar() {
             >
               <Link
                 href={getHref("about")}
-                className={`text-sm ${menuLinkStyle} ${
-                  activeSection === "about" && isHomePage ? "text-primary font-medium" : ""
-                }`}
+                className={`text-sm ${menuLinkStyle} ${activeSection === "about" && isHomePage ? "text-primary font-medium" : ""
+                  }`}
               >
                 About
               </Link>
@@ -185,9 +183,8 @@ export function Navbar() {
             >
               <Link
                 href={getHref("experience")}
-                className={`text-sm ${menuLinkStyle} ${
-                  activeSection === "experience" && isHomePage ? "text-primary font-medium" : ""
-                }`}
+                className={`text-sm ${menuLinkStyle} ${activeSection === "experience" && isHomePage ? "text-primary font-medium" : ""
+                  }`}
               >
                 Experience
               </Link>
@@ -199,9 +196,8 @@ export function Navbar() {
             >
               <Link
                 href={getHref("projects")}
-                className={`text-sm ${menuLinkStyle} ${
-                  activeSection === "projects" && isHomePage ? "text-primary font-medium" : ""
-                }`}
+                className={`text-sm ${menuLinkStyle} ${activeSection === "projects" && isHomePage ? "text-primary font-medium" : ""
+                  }`}
               >
                 Projects
               </Link>
@@ -213,9 +209,8 @@ export function Navbar() {
             >
               <Link
                 href={getHref("contact")}
-                className={`text-sm ${menuLinkStyle} ${
-                  activeSection === "contact" && isHomePage ? "text-primary font-medium" : ""
-                }`}
+                className={`text-sm ${menuLinkStyle} ${activeSection === "contact" && isHomePage ? "text-primary font-medium" : ""
+                  }`}
               >
                 Contact
               </Link>
@@ -234,7 +229,7 @@ export function Navbar() {
             >
               <Button asChild variant="outline" className="border-foreground bg-background/20 z-20 hover:bg-background/30">
                 <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                  PDF
+                  Resume
                   <Download className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -244,26 +239,26 @@ export function Navbar() {
           {/* Mobile Menu Button y ThemeToggle con z-index alto para que permanezcan visibles */}
           <div className="md:hidden flex items-center space-x-4 z-[102]">
             <ThemeToggle />
-            <button 
-              className="focus:outline-none relative" 
-              onClick={() => setIsMenuOpen(!isMenuOpen)} 
+            <button
+              className="focus:outline-none relative"
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
               aria-label="Toggle menu"
             >
               <div className="relative w-12 h-8 flex justify-center items-center">
                 {/* Primera línea */}
-                <div 
+                <div
                   className="absolute h-0.5 bg-foreground rounded-full w-12 transition-all duration-300"
-                  style={{ 
+                  style={{
                     transform: isMenuOpen ? 'translateY(0) rotate(45deg)' : 'translateY(-4px) rotate(0)',
-                  }} 
+                  }}
                 />
-                
+
                 {/* Segunda línea */}
-                <div 
+                <div
                   className="absolute h-0.5 bg-foreground rounded-full w-12 transition-all duration-300"
-                  style={{ 
+                  style={{
                     transform: isMenuOpen ? 'translateY(0) rotate(-45deg)' : 'translateY(4px) rotate(0)',
-                  }} 
+                  }}
                 />
               </div>
             </button>
@@ -287,36 +282,32 @@ export function Navbar() {
               <nav className="container mx-auto flex flex-col space-y-2 px-20">
                 <Link
                   href={getHref("about")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
-                    activeSection === "about" && isHomePage ? "text-primary font-bold" : ""
-                  }`}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${activeSection === "about" && isHomePage ? "text-primary font-bold" : ""
+                    }`}
                   onClick={closeMenu}
                 >
                   About
                 </Link>
                 <Link
                   href={getHref("experience")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
-                    activeSection === "experience" && isHomePage ? "text-primary font-bold" : ""
-                  }`}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${activeSection === "experience" && isHomePage ? "text-primary font-bold" : ""
+                    }`}
                   onClick={closeMenu}
                 >
                   Experience
                 </Link>
                 <Link
                   href={getHref("projects")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
-                    activeSection === "projects" && isHomePage ? "text-primary font-bold" : ""
-                  }`}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${activeSection === "projects" && isHomePage ? "text-primary font-bold" : ""
+                    }`}
                   onClick={closeMenu}
                 >
                   Projects
                 </Link>
                 <Link
                   href={getHref("contact")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
-                    activeSection === "contact" && isHomePage ? "text-primary font-bold" : ""
-                  }`}
+                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${activeSection === "contact" && isHomePage ? "text-primary font-bold" : ""
+                    }`}
                   onClick={closeMenu}
                 >
                   Contact
@@ -328,9 +319,6 @@ export function Navbar() {
                 </Button>
                 <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
                   <Link href={getHref("contact")}><Github className="w-5 h-5" /></Link>
-                </Button>
-                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
-                  <Link href={getHref("contact")}>PDF <ArrowDownRight className="w-7 h-7" /></Link>
                 </Button>
               </div>
             </div>

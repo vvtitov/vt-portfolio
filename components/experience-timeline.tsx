@@ -32,7 +32,7 @@ export function ExperienceTimeline() {
     },
     {
       id: 2,
-      role: "QA Analyst",
+      role: "QA Engineer",
       company: "MediaMonks",
       period: "December 2018 – March 2024",
       description:

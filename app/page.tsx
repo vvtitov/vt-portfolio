@@ -47,6 +47,14 @@ const siteStackSections = [
     title: "Forms & Validation",
     items: ["React Hook Form", "Zod"],
   },
+  {
+    title: "SEO",
+    items: ["Next.js Metadata API", "Open Graph + Twitter Cards", "robots.txt + sitemap.xml"],
+  },
+  {
+    title: "Quality & Testing",
+    items: ["Playwright", "E2E coverage for homepage + main routes"],
+  },
 ]
 
 export default function Home() {
@@ -245,21 +253,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Technologies Section */}
-      <section className="pt-10 pb-12 md:py-8 bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Technology Logos Carousel */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-          >
-            <TechLogosCarousel />
-          </motion.div>
-        </div>
-      </section>
-
       {/* Experience Section */}
       <section id="experience" className="py-12 md:pt-32 bg-gradient-to-b from-muted/30 to-background ">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -291,24 +284,19 @@ export default function Home() {
             <ExperienceTimeline />
           </div>
 
-          <div className="mt-16 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5 }}
-              className="mb-28"
-            >
-              <Button asChild variant="outline" className="group border-foreground">
-                <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                  Download Resume
-                  <Download className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </motion.div>
-            {/* <div className="select-none">
-              <MetaBalls/>
-            </div> */}
+          {/* Technologies Section (moved to bottom of Experience) */}
+          <div className="pt-10 pb-12 md:py-8 bg-background">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+              {/* Technology Logos Carousel */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.5, delay: 0.3 }}
+              >
+                <TechLogosCarousel />
+              </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -387,7 +375,7 @@ export default function Home() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <p className="text-muted-foreground mb-8 leading-relaxed">
+              <p className="text-muted-foreground mb-8 leading-relaxed px-4 md:px-0">
                 What clients and colleagues have to say about working with me.
               </p>
             </motion.div>
@@ -438,12 +426,12 @@ export default function Home() {
                 </div>
                 <p className="text-muted-foreground italic mb-6 flex-grow">
                   "Working with Vlad was a pleasure. He understood my vision immediately and transformed it into a beautiful, functional website that exceeded my expectations.
-                  He also developed a website for my label Essence, which was a great experience and I love the result.
+                  He also developed a website for my label Fabric Zero, which was a great experience and I love the result.
                   I've worked with many developers, but Vlad is one of the best I've had the privilege of working with."
                 </p>
                 <div>
                   <p className="font-semibold">Juan Elvadin</p>
-                  <p className="text-sm text-muted-foreground">Artist & DJ, Essence</p>
+                  <p className="text-sm text-muted-foreground">Musical Artist, Fabric Zero</p>
                 </div>
               </div>
             </motion.div>
@@ -497,7 +485,7 @@ export default function Home() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <p className="text-muted-foreground mb-8 leading-relaxed">
+              <p className="text-muted-foreground mb-8 leading-relaxed px-4 md:px-0">
                 Have a project in mind or want to discuss potential collaborations? I'd love to hear from you!
               </p>
             </motion.div>

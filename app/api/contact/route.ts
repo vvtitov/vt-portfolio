@@ -1,9 +1,19 @@
 import { NextResponse } from "next/server"
+import { Resend } from "resend"
+
+const resendApiKey = process.env.RESEND_API_KEY
+const recipientEmail = process.env.CONTACT_EMAIL ?? process.env.CONTACT_TO_EMAIL ?? "vladislavtitov.r@gmail.com"
+const senderEmail = process.env.CONTACT_FROM_EMAIL ?? "Portfolio Contact <onboarding@resend.dev>"
+const resend = resendApiKey ? new Resend(resendApiKey) : null
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json()
+    if (!resend) {
+      console.error("Missing RESEND_API_KEY environment variable")
+      return NextResponse.json({ error: "Email service is not configured." }, { status: 500 })
+    }
 
+    const data = await request.json()
     const requiredFields = ["name", "email", "subject", "message"]
     for (const field of requiredFields) {
       if (!data[field]) {
@@ -11,19 +21,33 @@ export async function POST(request: Request) {
       }
     }
 
-    // In a real implementation, you would:
-    // 1. Send data to CRM or email service
-    // 2. Store in database
-    // 3. Send confirmation email
+    const { name, email, subject, message } = data as {
+      name: string
+      email: string
+      subject: string
+      message: string
+    }
 
-    // For demo purposes, we'll just return success
+    const { error } = await resend.emails.send({
+      from: senderEmail,
+      to: recipientEmail,
+      replyTo: email,
+      subject: `[Portfolio] ${subject}`,
+      text: `Name: ${name}\nEmail: ${email}\n\n${message}`,
+    })
+
+    if (error) {
+      console.error("Resend API error:", error)
+      return NextResponse.json({ error: "Failed to send your message. Please try again." }, { status: 500 })
+    }
+
     return NextResponse.json({
       success: true,
-      message: "Your message has been received. I'll get back to you shortly.",
+      message: "Message sent successfully.",
     })
   } catch (error) {
     console.error("Error processing contact form:", error)
-    return NextResponse.json({ error: "Failed to process your request. Please try again." }, { status: 500 })
+    return NextResponse.json({ error: "Failed to send your message. Please try again." }, { status: 500 })
   }
 }
 
