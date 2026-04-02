@@ -160,116 +160,184 @@ const Threads: React.FC<ThreadsProps> = ({
 
     if (mediaQuery?.matches) return;
 
-    const testCanvas = document.createElement("canvas");
-    const hasWebGL =
-      !!testCanvas.getContext("webgl") || !!testCanvas.getContext("experimental-webgl");
+    let cancelled = false;
+    let teardown: (() => void) | undefined;
+    let idleCallbackId: number | undefined;
+    let initTimeoutId: number | undefined;
 
-    if (!hasWebGL) return;
+    const init = () => {
+      if (cancelled || !containerRef.current) return;
 
-    let renderer: Renderer;
-    let gl;
+      const testCanvas = document.createElement("canvas");
+      const hasWebGL =
+        !!testCanvas.getContext("webgl") || !!testCanvas.getContext("experimental-webgl");
 
-    try {
-      renderer = new Renderer({ alpha: true, dpr: Math.min(window.devicePixelRatio || 1, 1.5) });
-      gl = renderer.gl;
-    } catch {
-      return;
-    }
+      if (!hasWebGL) return;
 
-    gl.clearColor(0, 0, 0, 0);
-    gl.enable(gl.BLEND);
-    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    container.appendChild(gl.canvas as HTMLCanvasElement);
+      const isNarrow = typeof window !== "undefined" && window.innerWidth < 768;
+      const maxDpr = isNarrow ? 1 : 1.25;
 
-    const geometry = new Triangle(gl);
+      let renderer: Renderer;
+
+      try {
+        renderer = new Renderer({
+          alpha: true,
+          dpr: Math.min(window.devicePixelRatio || 1, maxDpr),
+        });
+      } catch {
+        return;
+      }
+
+      const gl = renderer.gl;
+
+      gl.clearColor(0, 0, 0, 0);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      container.appendChild(gl.canvas as HTMLCanvasElement);
+
+      const geometry = new Triangle(gl);
     
     // Determinar el color basado en el tema
-    const themeColor = theme === 'dark' 
-      ? [1, 1, 1] // Blanco para tema oscuro
-      : [0.1, 0.1, 0.1]; // Negro más intenso para tema claro
-    
-    const program = new Program(gl, {
-      vertex: vertexShader,
-      fragment: fragmentShader,
-      uniforms: {
-        iTime: { value: 0 },
-        iResolution: {
-          value: new Color(
-            gl.canvas.width,
-            gl.canvas.height,
-            gl.canvas.width / gl.canvas.height,
-          ),
+      const themeColor =
+        theme === "dark"
+          ? [1, 1, 1]
+          : [0.1, 0.1, 0.1];
+
+      const program = new Program(gl, {
+        vertex: vertexShader,
+        fragment: fragmentShader,
+        uniforms: {
+          iTime: { value: 0 },
+          iResolution: {
+            value: new Color(
+              gl.canvas.width,
+              gl.canvas.height,
+              gl.canvas.width / gl.canvas.height,
+            ),
+          },
+          uColor: { value: new Color(...themeColor) },
+          uAmplitude: { value: amplitude },
+          uDistance: { value: distance },
+          uMouse: { value: new Float32Array([0.5, 0.5]) },
         },
-        uColor: { value: new Color(...themeColor) },
-        uAmplitude: { value: amplitude },
-        uDistance: { value: distance },
-        uMouse: { value: new Float32Array([0.5, 0.5]) },
-      },
-    });
+      });
 
-    const mesh = new Mesh(gl, { geometry, program });
+      const mesh = new Mesh(gl, { geometry, program });
 
-    function resize() {
-      const { clientWidth, clientHeight } = container;
-      if (!clientWidth || !clientHeight) return;
-      renderer.setSize(clientWidth, clientHeight);
-      program.uniforms.iResolution.value.r = clientWidth;
-      program.uniforms.iResolution.value.g = clientHeight;
-      program.uniforms.iResolution.value.b = clientWidth / clientHeight;
-    }
-    window.addEventListener("resize", resize, { passive: true });
-    resize();
-
-    let currentMouse = [0.5, 0.5];
-    let targetMouse = [0.5, 0.5];
-
-    function handleMouseMove(e: MouseEvent) {
-      const rect = container.getBoundingClientRect();
-      const x = (e.clientX - rect.left) / rect.width;
-      const y = 1.0 - (e.clientY - rect.top) / rect.height;
-      targetMouse = [x, y];
-    }
-    function handleMouseLeave() {
-      targetMouse = [0.5, 0.5];
-    }
-    
-    if (enableMouseInteraction) {
-      container.addEventListener("mousemove", handleMouseMove);
-      container.addEventListener("mouseleave", handleMouseLeave);
-    }
-
-    function update(t: number) {
-      if (enableMouseInteraction) {
-        // Aumentar el factor de suavizado para una respuesta más rápida
-        const smoothing = 0.1;
-        currentMouse[0] += smoothing * (targetMouse[0] - currentMouse[0]);
-        currentMouse[1] += smoothing * (targetMouse[1] - currentMouse[1]);
-        program.uniforms.uMouse.value[0] = currentMouse[0];
-        program.uniforms.uMouse.value[1] = currentMouse[1];
-      } else {
-        program.uniforms.uMouse.value[0] = 0.5;
-        program.uniforms.uMouse.value[1] = 0.5;
+      function resize() {
+        const { clientWidth, clientHeight } = container;
+        if (!clientWidth || !clientHeight) return;
+        renderer.setSize(clientWidth, clientHeight);
+        program.uniforms.iResolution.value.r = clientWidth;
+        program.uniforms.iResolution.value.g = clientHeight;
+        program.uniforms.iResolution.value.b = clientWidth / clientHeight;
       }
-      program.uniforms.iTime.value = t * 0.001;
+      window.addEventListener("resize", resize, { passive: true });
+      resize();
 
-      renderer.render({ scene: mesh });
+      let currentMouse = [0.5, 0.5];
+      let targetMouse = [0.5, 0.5];
+      let heroVisible = true;
+
+      const intersectionObserver =
+        typeof IntersectionObserver !== "undefined"
+          ? new IntersectionObserver(
+              (entries) => {
+                const entry = entries[0];
+                heroVisible = entry ? entry.isIntersecting : true;
+              },
+              { root: null, rootMargin: "80px 0px", threshold: 0 },
+            )
+          : null;
+      intersectionObserver?.observe(container);
+
+      function handleMouseMove(e: MouseEvent) {
+        const rect = container.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = 1.0 - (e.clientY - rect.top) / rect.height;
+        targetMouse = [x, y];
+      }
+      function handleMouseLeave() {
+        targetMouse = [0.5, 0.5];
+      }
+
+      function handleTouchMove(e: TouchEvent) {
+        if (e.touches.length === 0) return;
+        const rect = container.getBoundingClientRect();
+        const touch = e.touches[0];
+        const x = (touch.clientX - rect.left) / rect.width;
+        const y = 1.0 - (touch.clientY - rect.top) / rect.height;
+        targetMouse = [Math.min(1, Math.max(0, x)), Math.min(1, Math.max(0, y))];
+      }
+
+      function handleTouchEnd() {
+        targetMouse = [0.5, 0.5];
+      }
+
+      if (enableMouseInteraction) {
+        container.addEventListener("mousemove", handleMouseMove);
+        container.addEventListener("mouseleave", handleMouseLeave);
+        container.addEventListener("touchmove", handleTouchMove, { passive: true });
+        container.addEventListener("touchend", handleTouchEnd);
+        container.addEventListener("touchcancel", handleTouchEnd);
+      }
+
+      function update(t: number) {
+        if (enableMouseInteraction) {
+          const smoothing = 0.1;
+          currentMouse[0] += smoothing * (targetMouse[0] - currentMouse[0]);
+          currentMouse[1] += smoothing * (targetMouse[1] - currentMouse[1]);
+          program.uniforms.uMouse.value[0] = currentMouse[0];
+          program.uniforms.uMouse.value[1] = currentMouse[1];
+        } else {
+          program.uniforms.uMouse.value[0] = 0.5;
+          program.uniforms.uMouse.value[1] = 0.5;
+        }
+        program.uniforms.iTime.value = t * 0.001;
+
+        if (heroVisible) {
+          renderer.render({ scene: mesh });
+        }
+        animationFrameId.current = requestAnimationFrame(update);
+      }
       animationFrameId.current = requestAnimationFrame(update);
+
+      teardown = () => {
+        intersectionObserver?.disconnect();
+        if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
+        window.removeEventListener("resize", resize);
+
+        if (enableMouseInteraction) {
+          container.removeEventListener("mousemove", handleMouseMove);
+          container.removeEventListener("mouseleave", handleMouseLeave);
+          container.removeEventListener("touchmove", handleTouchMove);
+          container.removeEventListener("touchend", handleTouchEnd);
+          container.removeEventListener("touchcancel", handleTouchEnd);
+        }
+        if (container.contains(gl.canvas as HTMLCanvasElement)) {
+          container.removeChild(gl.canvas as HTMLCanvasElement);
+        }
+        gl.getExtension("WEBGL_lose_context")?.loseContext();
+      };
+    };
+
+    const startSooner = typeof window !== "undefined" && window.innerWidth < 768;
+
+    if (typeof window.requestIdleCallback === "function") {
+      idleCallbackId = window.requestIdleCallback(init, { timeout: startSooner ? 200 : 500 });
+    } else {
+      initTimeoutId = window.setTimeout(init, startSooner ? 120 : 350) as unknown as number;
     }
-    animationFrameId.current = requestAnimationFrame(update);
 
     return () => {
-      if (animationFrameId.current)
-        cancelAnimationFrame(animationFrameId.current);
-      window.removeEventListener("resize", resize);
-
-      if (enableMouseInteraction) {
-        container.removeEventListener("mousemove", handleMouseMove);
-        container.removeEventListener("mouseleave", handleMouseLeave);
+      cancelled = true;
+      if (idleCallbackId !== undefined) {
+        window.cancelIdleCallback?.(idleCallbackId);
       }
-      if (container.contains(gl.canvas as HTMLCanvasElement)) {
-        container.removeChild(gl.canvas as HTMLCanvasElement);
+      if (initTimeoutId !== undefined) {
+        window.clearTimeout(initTimeoutId);
       }
-      gl.getExtension("WEBGL_lose_context")?.loseContext();
+      teardown?.();
     };
   }, [color, amplitude, distance, enableMouseInteraction, theme]);
 

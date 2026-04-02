@@ -10,33 +10,32 @@ export function AnimatedText({ text }: AnimatedTextProps) {
   // Split text into an array of words
   const words = text.split(" ")
 
-  // Variants for container of words
+  // Keep text painted from the first frame so LCP is not blocked waiting for opacity.
   const container = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 1 },
     visible: (i = 1) => ({
       opacity: 1,
-      transition: { staggerChildren: 0.12, delayChildren: 0.04 * i },
+      transition: { staggerChildren: 0.08, delayChildren: 0.03 * i },
     }),
   }
 
-  // Variants for each word
   const child = {
     visible: {
       opacity: 1,
       y: 0,
       transition: {
         type: "spring",
-        damping: 12,
-        stiffness: 100,
+        damping: 14,
+        stiffness: 120,
       },
     },
     hidden: {
-      opacity: 0,
-      y: 20,
+      opacity: 1,
+      y: 14,
       transition: {
         type: "spring",
-        damping: 12,
-        stiffness: 100,
+        damping: 14,
+        stiffness: 120,
       },
     },
   }

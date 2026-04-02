@@ -3,17 +3,18 @@ import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import Script from "next/script"
 import "./globals.css"
+import { ClientEffects } from "@/components/client-effects"
 import { Navbar } from "@/components/navbar"
 import { Footer } from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
-import { CursorFollower } from "@/components/cursor-follower"
 import { MenuProvider } from "@/context/menu-context"
 
-// Cargar CursorFollower dinámicamente solo en el cliente
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-inter",
+  display: "swap",
+  adjustFontFallback: true,
 })
 export const metadata: Metadata = {
   metadataBase: new URL('https://www.vtitov.dev'),
@@ -60,7 +61,7 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased max-w-[100vw] overflow-x-hidden`} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <MenuProvider>
-            <CursorFollower />
+            <ClientEffects />
             <Navbar />
             {children}
             <Footer />

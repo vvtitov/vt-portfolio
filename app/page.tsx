@@ -11,7 +11,6 @@ import { AnimatedText } from "@/components/animated-text"
 import { ExperienceTimeline } from "@/components/experience-timeline"
 import { ProjectFilter } from "@/components/project-filter"
 import { ScrollToTop } from "@/components/scroll-to-top"
-import Threads from "@/components/ui/threads-bg"
 import { FilteredProjects } from "@/components/filtered-projects"
 import { ProjectsProvider } from "@/context/projects-context"
 import dynamic from "next/dynamic"
@@ -20,6 +19,16 @@ const ContactForm = dynamic(() => import("@/components/contact-form").then((mod)
 const TechLogosCarousel = dynamic(() =>
   import("@/components/tech-logos-carousel").then((mod) => mod.TechLogosCarousel),
 )
+
+const Threads = dynamic(() => import("@/components/ui/threads-bg"), {
+  ssr: false,
+  loading: () => (
+    <div
+      className="absolute inset-0 bg-gradient-to-b from-muted/50 via-background/80 to-muted/30 dark:from-muted/20 dark:via-background/60 dark:to-muted/10"
+      aria-hidden
+    />
+  ),
+})
 
 const siteStackSections = [
   {
@@ -62,7 +71,7 @@ export default function Home() {
 
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-4xl mx-auto text-center p-4 md:p-10">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+            <motion.div initial={{ opacity: 1, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
                 <AnimatedText text="Hello!👋🏼" />
                 <AnimatedText text="I'm Vladislav Titov" />
@@ -70,20 +79,20 @@ export default function Home() {
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.2 }}
+              transition={{ duration: 0.45, delay: 0.12 }}
             >
               <p className="text-lg md:text-xl text-foreground/90 mb-8 max-w-2xl text-left text-pretty">
-                I'm a <span className="italic">software developer</span> with <span className="font-bold">6+ years of experience</span> in Quality Assurance.
+                I'm a <span className="italic">frontend developer</span> with <span className="font-bold">6+ years of experience</span> in Quality Assurance.
                 I've worked with a wide range of clients and technologies, and I'm always looking for new challenges and opportunities to grow.
               </p>
             </motion.div>
 
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 1, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.4 }}
+              transition={{ duration: 0.45, delay: 0.24 }}
               className="flex flex-col sm:flex-row gap-4 justify-left"
             >
               <Button asChild size="lg" className="group">
