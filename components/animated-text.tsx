@@ -1,6 +1,6 @@
 "use client"
 
-import { motion } from "framer-motion"
+import { motion, type Variants } from "framer-motion"
 
 interface AnimatedTextProps {
   text: string
@@ -11,7 +11,7 @@ export function AnimatedText({ text }: AnimatedTextProps) {
   const words = text.split(" ")
 
   // Keep text painted from the first frame so LCP is not blocked waiting for opacity.
-  const container = {
+  const container: Variants = {
     hidden: { opacity: 1 },
     visible: (i = 1) => ({
       opacity: 1,
@@ -19,7 +19,7 @@ export function AnimatedText({ text }: AnimatedTextProps) {
     }),
   }
 
-  const child = {
+  const child: Variants = {
     visible: {
       opacity: 1,
       y: 0,
