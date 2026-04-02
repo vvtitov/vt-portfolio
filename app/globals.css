@@ -85,22 +85,16 @@ html, body {
   width: 100%;
 }
 
-/* Custom cursor styles */
-@media (min-width: 768px) {
-  body {
-    cursor: none;
-  }
+/* Ensure navbar elements stay above animated backgrounds */
+.navbar-header {
+  z-index: 50;
+}
 
-  a,
-  button,
-  input,
-  textarea,
-  [role="button"] {
-    cursor: none !important;
-  }
-  
-  /* Ensure navbar elements work with custom cursor */
-  .navbar-header {
-    z-index: 50;
-  }
+body.custom-cursor-enabled,
+body.custom-cursor-enabled a,
+body.custom-cursor-enabled button,
+body.custom-cursor-enabled input,
+body.custom-cursor-enabled textarea,
+body.custom-cursor-enabled [role="button"] {
+  cursor: none !important;
 }

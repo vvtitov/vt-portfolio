@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
@@ -8,90 +8,128 @@ import { ArrowDownRight, ArrowRight, Download, Github, Linkedin } from "lucide-r
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { useMenu } from "@/context/menu-context"
-import Image from "next/image"
 import Logo from "./logo"
 
 export function Navbar() {
   const { isMenuOpen, setIsMenuOpen } = useMenu()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
-  const [lastScrollY, setLastScrollY] = useState(0)
   const [activeSection, setActiveSection] = useState("home")
+  const lastScrollY = useRef(0)
+  const scrollPositionRef = useRef(0)
   const pathname = usePathname()
   const isHomePage = pathname === "/"
 
-  // Prevenir scroll cuando el menú móvil está abierto
+  // Bloquea completamente el scroll del documento cuando el menú móvil está abierto.
   useEffect(() => {
+    const { body, documentElement } = document
+
     if (isMenuOpen) {
-      document.body.style.overflow = 'hidden';
+      scrollPositionRef.current = window.scrollY
+
+      body.style.position = "fixed"
+      body.style.top = `-${scrollPositionRef.current}px`
+      body.style.left = "0"
+      body.style.right = "0"
+      body.style.width = "100%"
+      body.style.overflow = "hidden"
+      body.style.touchAction = "none"
+
+      documentElement.style.overflow = "hidden"
+      documentElement.style.overscrollBehavior = "none"
     } else {
-      document.body.style.overflow = 'unset';
+      const scrollY = Math.abs(parseInt(body.style.top || "0", 10)) || scrollPositionRef.current
+
+      body.style.position = ""
+      body.style.top = ""
+      body.style.left = ""
+      body.style.right = ""
+      body.style.width = ""
+      body.style.overflow = ""
+      body.style.touchAction = ""
+
+      documentElement.style.overflow = ""
+      documentElement.style.overscrollBehavior = ""
+
+      window.scrollTo(0, scrollY)
     }
+
     return () => {
-      document.body.style.overflow = 'unset';
-    };
-  }, [isMenuOpen]);
+      body.style.position = ""
+      body.style.top = ""
+      body.style.left = ""
+      body.style.right = ""
+      body.style.width = ""
+      body.style.overflow = ""
+      body.style.touchAction = ""
+
+      documentElement.style.overflow = ""
+      documentElement.style.overscrollBehavior = ""
+    }
+  }, [isMenuOpen])
 
   useEffect(() => {
-    const handleScroll = () => {
+    let ticking = false
+
+    const updateOnScroll = () => {
       const currentScrollY = window.scrollY;
       
-      // Determinar si está scrolleado
-      if (currentScrollY > 10) {
-        setIsScrolled(true);
-      } else {
-        setIsScrolled(false);
-      }
+      setIsScrolled((previous) => {
+        const nextValue = currentScrollY > 10
+        return previous === nextValue ? previous : nextValue
+      })
       
-      // Determinar dirección del scroll y visibilidad
       if (currentScrollY < 10) {
-        // Siempre visible en la parte superior
-        setIsVisible(true);
-      } else if (currentScrollY < lastScrollY) {
-        // Scrolleando hacia arriba - mostrar navbar
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY && currentScrollY > 100) {
-        // Scrolleando hacia abajo y no en la parte superior - ocultar navbar
-        setIsVisible(false);
+        setIsVisible((previous) => (previous ? previous : true))
+      } else if (currentScrollY < lastScrollY.current) {
+        setIsVisible((previous) => (previous ? previous : true))
+      } else if (currentScrollY > lastScrollY.current && currentScrollY > 100) {
+        setIsVisible((previous) => (previous ? false : previous))
       }
       
-      // Actualizar la posición del último scroll
-      setLastScrollY(currentScrollY);
+      lastScrollY.current = currentScrollY;
 
-      // Only update active section on home page
       if (isHomePage) {
-        // Update active section based on scroll position
-        const sections = ["home", "about", "experience", "skills", "projects", "testimonials", "contact"]
+        const sections = ["home", "about", "experience", "projects", "testimonials", "contact"]
 
-        // Verificar primero si estamos en la sección "home" (hero)
         const homeElement = document.getElementById("home")
         if (homeElement) {
           const homeRect = homeElement.getBoundingClientRect()
-          // Si la parte superior de la sección home está visible y cerca del borde superior
           if (homeRect.top <= 100 && homeRect.bottom > window.innerHeight / 2) {
-            setActiveSection("home")
+            setActiveSection((previous) => (previous === "home" ? previous : "home"))
+            ticking = false
             return
           }
         }
 
-        // Si no estamos en home, verificar las demás secciones
-        for (const section of sections.reverse()) {
-          if (section === "home") continue; // Ya verificamos home arriba
+        for (const section of [...sections].reverse()) {
+          if (section === "home") continue
           const element = document.getElementById(section)
           if (element) {
             const rect = element.getBoundingClientRect()
             if (rect.top <= 100) {
-              setActiveSection(section)
+              setActiveSection((previous) => (previous === section ? previous : section))
               break
             }
           }
         }
       }
+
+      ticking = false
     }
 
-    window.addEventListener("scroll", handleScroll)
+    const handleScroll = () => {
+      if (ticking) return
+
+      ticking = true
+      window.requestAnimationFrame(updateOnScroll)
+    }
+
+    updateOnScroll()
+    window.addEventListener("scroll", handleScroll, { passive: true })
+
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [isHomePage, lastScrollY])
+  }, [isHomePage])
 
   const closeMenu = () => {
     setIsMenuOpen(false)
@@ -111,7 +149,7 @@ export function Navbar() {
   return (
     <header
       className={`navbar-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm py-4" : "bg-transparent py-6"
+        isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-4"
       } ${isVisible && !isMenuOpen ? "translate-y-0" : isMenuOpen ? "translate-y-0" : "-translate-y-full"}`}
       style={{ pointerEvents: "auto" }}
     >
@@ -119,7 +157,7 @@ export function Navbar() {
         <div className="flex items-center justify-between">
           {/* Logo estático sin animaciones */}
           <div className="z-[102]">
-            <Link href="/" className="text-2xl font-bold">
+            <Link href="/" className="text-xl font-bold">
               <Logo />
             </Link>
           </div>
@@ -152,20 +190,6 @@ export function Navbar() {
                 }`}
               >
                 Experience
-              </Link>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.3 }}
-            >
-              <Link
-                href={getHref("skills")}
-                className={`text-sm ${menuLinkStyle} ${
-                  activeSection === "skills" && isHomePage ? "text-primary font-medium" : ""
-                }`}
-              >
-                Skills
               </Link>
             </motion.div>
             <motion.div
@@ -225,10 +249,10 @@ export function Navbar() {
               onClick={() => setIsMenuOpen(!isMenuOpen)} 
               aria-label="Toggle menu"
             >
-              <div className="relative w-8 h-8 flex justify-center items-center">
+              <div className="relative w-12 h-8 flex justify-center items-center">
                 {/* Primera línea */}
                 <div 
-                  className="absolute h-0.5 bg-foreground rounded-full w-6 transition-all duration-300"
+                  className="absolute h-0.5 bg-foreground rounded-full w-12 transition-all duration-300"
                   style={{ 
                     transform: isMenuOpen ? 'translateY(0) rotate(45deg)' : 'translateY(-4px) rotate(0)',
                   }} 
@@ -236,7 +260,7 @@ export function Navbar() {
                 
                 {/* Segunda línea */}
                 <div 
-                  className="absolute h-0.5 bg-foreground rounded-full w-6 transition-all duration-300"
+                  className="absolute h-0.5 bg-foreground rounded-full w-12 transition-all duration-300"
                   style={{ 
                     transform: isMenuOpen ? 'translateY(0) rotate(-45deg)' : 'translateY(4px) rotate(0)',
                   }} 
@@ -278,15 +302,6 @@ export function Navbar() {
                   onClick={closeMenu}
                 >
                   Experience
-                </Link>
-                <Link
-                  href={getHref("skills")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${
-                    activeSection === "skills" && isHomePage ? "text-primary font-bold" : ""
-                  }`}
-                  onClick={closeMenu}
-                >
-                  Skills
                 </Link>
                 <Link
                   href={getHref("projects")}

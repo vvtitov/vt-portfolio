@@ -1,69 +1,80 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { motion, useMotionValue, useSpring } from "framer-motion"
 
 export function CursorFollower() {
-  // Inicializar estados con valores por defecto
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isVisible, setIsVisible] = useState(false)
-  const [isMounted, setIsMounted] = useState(false)
+  const outerX = useMotionValue(-100)
+  const outerY = useMotionValue(-100)
+  const innerX = useMotionValue(-100)
+  const innerY = useMotionValue(-100)
+  const smoothOuterX = useSpring(outerX, { damping: 20, stiffness: 1200, mass: 0.1 })
+  const smoothOuterY = useSpring(outerY, { damping: 20, stiffness: 1200, mass: 0.1 })
+  const smoothInnerX = useSpring(innerX, { damping: 30, stiffness: 1500, mass: 0.05 })
+  const smoothInnerY = useSpring(innerY, { damping: 30, stiffness: 1500, mass: 0.05 })
 
   useEffect(() => {
-    // Marcar que el componente está montado (solo en el cliente)
-    setIsMounted(true)
-
-    // Función para detectar si es un dispositivo móvil
-    const isMobileDevice = () => {
-      if (typeof window === "undefined") return true // Por defecto, asumir móvil en SSR
-      
-      return (
-        window.innerWidth <= 768 || 
-        (typeof navigator !== "undefined" && navigator.maxTouchPoints > 0) || 
-        (typeof navigator !== "undefined" && /Android|iPhone|iPad|iPod|webOS|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent))
-      )
+    if (typeof window === "undefined" || typeof window.matchMedia !== "function") {
+      return
     }
 
-    // Solo mostrar cursor personalizado en escritorio
-    if (!isMobileDevice()) {
-      setIsVisible(true)
+    const mediaQuery = window.matchMedia("(hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference)")
+    const updateVisibility = () => {
+      setIsVisible(mediaQuery.matches && window.innerWidth > 768)
+    }
 
-      const handleMouseMove = (e: MouseEvent) => {
-        setMousePosition({ x: e.clientX, y: e.clientY })
+    const handleMouseMove = (event: MouseEvent) => {
+      outerX.set(event.clientX - 12)
+      outerY.set(event.clientY - 12)
+      innerX.set(event.clientX - 4)
+      innerY.set(event.clientY - 4)
+    }
+
+    updateVisibility()
+
+    if (typeof mediaQuery.addEventListener === "function") {
+      mediaQuery.addEventListener("change", updateVisibility)
+    } else {
+      mediaQuery.addListener(updateVisibility)
+    }
+
+    window.addEventListener("resize", updateVisibility, { passive: true })
+    window.addEventListener("mousemove", handleMouseMove, { passive: true })
+
+    return () => {
+      document.body.classList.remove("custom-cursor-enabled")
+
+      if (typeof mediaQuery.removeEventListener === "function") {
+        mediaQuery.removeEventListener("change", updateVisibility)
+      } else {
+        mediaQuery.removeListener(updateVisibility)
       }
 
-      window.addEventListener("mousemove", handleMouseMove)
-
-      return () => {
-        window.removeEventListener("mousemove", handleMouseMove)
-      }
+      window.removeEventListener("resize", updateVisibility)
+      window.removeEventListener("mousemove", handleMouseMove)
     }
   }, [])
 
-  // No renderizar nada durante SSR o si no es visible
-  if (!isMounted || !isVisible) return null
+  useEffect(() => {
+    document.body.classList.toggle("custom-cursor-enabled", isVisible)
+
+    return () => {
+      document.body.classList.remove("custom-cursor-enabled")
+    }
+  }, [isVisible])
+
+  if (!isVisible) return null
 
   return (
     <>
       <motion.div
         className="fixed top-0 left-0 w-6 h-6 rounded-full border-2 border-primary z-[60] pointer-events-none"
-        animate={{
-          x: mousePosition.x - 12,
-          y: mousePosition.y - 12,
-        }}
-        transition={{
-          type: "spring",
-          damping: 20,
-          stiffness: 1200,
-          mass: 0.1,
-        }}
+        style={{ x: smoothOuterX, y: smoothOuterY }}
       />
       <motion.div
         className="fixed top-0 left-0 w-2 h-2 bg-primary rounded-full z-[60] pointer-events-none"
-        animate={{
-          x: mousePosition.x - 4,
-          y: mousePosition.y - 4,
-        }}
+        style={{ x: smoothInnerX, y: smoothInnerY }}
       />
     </>
   )

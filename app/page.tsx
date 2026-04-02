@@ -6,23 +6,39 @@ import Image from "next/image"
 import Link from "next/link"
 import { ArrowRight, ExternalLink, Github, Linkedin, Mail, Download, ArrowDownRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { SkillBar } from "@/components/skill-bar"
-import { ContactForm } from "@/components/contact-form"
 import { AnimatedCounter } from "@/components/animated-counter"
 import { AnimatedText } from "@/components/animated-text"
 import { ExperienceTimeline } from "@/components/experience-timeline"
 import { ProjectFilter } from "@/components/project-filter"
 import { ScrollToTop } from "@/components/scroll-to-top"
-import { projects } from "@/data/projects"
-import { skills } from "@/data/skills"
 import Threads from "@/components/ui/threads-bg"
-import dynamic from "next/dynamic"
-import { TechLogosCarousel } from "@/components/tech-logos-carousel"
-import { useTheme } from "next-themes"
 import { FilteredProjects } from "@/components/filtered-projects"
+import { ProjectsProvider } from "@/context/projects-context"
+import dynamic from "next/dynamic"
 
-// Importar MetaBalls solo en el cliente
-const MetaBalls = dynamic(() => import("@/components/ui/MetaBalls"), { ssr: false })
+const ContactForm = dynamic(() => import("@/components/contact-form").then((mod) => mod.ContactForm))
+const TechLogosCarousel = dynamic(() =>
+  import("@/components/tech-logos-carousel").then((mod) => mod.TechLogosCarousel),
+)
+
+const siteStackSections = [
+  {
+    title: "Core",
+    items: ["Next.js 15", "React 19", "TypeScript"],
+  },
+  {
+    title: "UI & Design",
+    items: ["Tailwind CSS", "shadcn/ui", "Lucide Icons"],
+  },
+  {
+    title: "Animation & Interaction",
+    items: ["Framer Motion", "OGL background effects"],
+  },
+  {
+    title: "Forms & Validation",
+    items: ["React Hook Form", "Zod"],
+  },
+]
 
 export default function Home() {
   const ref = useRef(null)
@@ -33,8 +49,6 @@ export default function Home() {
 
   const y = useTransform(scrollYProgress, [0, 1], ["0%", "40%"])
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0])
-  const { theme, resolvedTheme } = useTheme()
-
   return (
     <main className="relative overflow-x-hidden w-full">
       <ScrollToTop />
@@ -74,7 +88,7 @@ export default function Home() {
             >
               <Button asChild size="lg" className="group">
                 <Link href="#projects">
-                  View My Work
+                  Explore My Work
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 mt-1" />
                 </Link>
               </Button>
@@ -131,7 +145,14 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="relative h-[500px] w-full rounded-lg overflow-hidden shadow-md"
             >
-              <Image src="/vlad.jpeg" alt="Portrait photo" fill className="object-cover" />
+              <Image
+                src="/vlad.jpeg"
+                alt="Portrait photo"
+                fill
+                priority
+                sizes="(min-width: 768px) 50vw, 100vw"
+                className="object-cover"
+              />
             </motion.div>
 
             <div>
@@ -215,6 +236,21 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Technologies Section */}
+      <section className="py-6 md:py-8 bg-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          {/* Technology Logos Carousel */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5, delay: 0.3 }}
+          >
+            <TechLogosCarousel />
+          </motion.div>
+        </div>
+      </section>
+
       {/* Experience Section */}
       <section id="experience" className="py-12 md:pt-32 bg-gradient-to-b from-muted/30 to-background ">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -247,14 +283,13 @@ export default function Home() {
           </div>
 
           <div className="mt-16 text-center">
-            
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5 }}
               className="mb-28"
-            >              
+            >
               <Button asChild variant="outline" className="group border-foreground">
                 <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center">
                   Download Resume
@@ -262,70 +297,17 @@ export default function Home() {
                 </Link>
               </Button>
             </motion.div>
-            <div className="select-none">
+            {/* <div className="select-none">
               <MetaBalls/>
-            </div>
+            </div> */}
           </div>
-        </div>
-      </section>
-
-      {/* Skills Section */}
-      <section id="skills" className="py-12 md:py-32 bg-background">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5 }}
-            >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">
-                My <span className="text-primary">Skills</span>
-              </h2>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <p className="text-muted-foreground mb-8 leading-relaxed">
-                I've developed expertise in various technologies and design principles, allowing me to create
-                comprehensive solutions for web projects.
-              </p>
-            </motion.div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 max-w-4xl mx-auto">
-            <div className="space-y-6">
-              {skills.slice(0, 4).map((skill, index) => (
-                <SkillBar key={skill.name} name={skill.name} percentage={skill.percentage} delay={0.1 * (index + 1)} />
-              ))}
-            </div>
-            <div className="space-y-6">
-              {skills.slice(4, 8).map((skill, index) => (
-                <SkillBar key={skill.name} name={skill.name} percentage={skill.percentage} delay={0.1 * (index + 5)} />
-              ))}
-            </div>
-          </div>
-
-          {/* Technology Logos Carousel */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="mt-24"
-          >
-            <TechLogosCarousel />
-          </motion.div>
         </div>
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="py-24 md:py-32 bg-muted/30">
-        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+      <section id="projects" className="pt-10 pb-24 md:pt-32 md:pb-32 bg-muted/30">
+        <ProjectsProvider>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -371,7 +353,8 @@ export default function Home() {
               </Button>
             </motion.div>
           </div>
-        </div>
+          </div>
+        </ProjectsProvider>
       </section>
 
       {/* Testimonials Section */}
@@ -485,7 +468,7 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-24 md:py-32 bg-muted/30">
+      <section id="contact" className="pt-24 pb-10 md:py-32 bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-16">
             <motion.div
@@ -575,6 +558,62 @@ export default function Home() {
               <ContactForm />
             </motion.div>
           </div>
+        </div>
+      </section>
+
+      {/* Stack Markdown Section */}
+      <section id="stack" className="pt-8 pb-20 md:py-28 bg-background">
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="max-w-5xl mx-auto"
+          >
+            <div className="mb-8 text-center">
+              <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+                Built With <span className="text-primary">This Stack</span>
+              </h2>
+              <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+                A quick technical snapshot of the main technologies used to design, build and animate this portfolio.
+              </p>
+            </div>
+
+            <div className="overflow-hidden rounded-2xl border border-border/70 bg-card shadow-sm">
+              <div className="flex items-center gap-2 border-b border-border/70 bg-muted/50 px-4 py-3">
+                <span className="h-3 w-3 rounded-full bg-red-400/80" />
+                <span className="h-3 w-3 rounded-full bg-yellow-400/80" />
+                <span className="h-3 w-3 rounded-full bg-green-400/80" />
+                <p className="ml-2 text-xs uppercase tracking-[0.22em] text-muted-foreground">stack.md</p>
+              </div>
+
+              <div className="space-y-6 p-6 md:p-8 font-mono text-sm leading-7 text-foreground/90">
+                <div className="space-y-2">
+                  <p className="text-primary"># Technologies used in this website</p>
+                  <p className="text-muted-foreground">A modern portfolio focused on performance, motion and clean UI.</p>
+                </div>
+
+                {siteStackSections.map((section) => (
+                  <div key={section.title} className="space-y-2">
+                    <p className="text-primary/90">## {section.title}</p>
+                    <ul className="space-y-1 text-muted-foreground">
+                      {section.items.map((item) => (
+                        <li key={item}>- {item}</li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
+
+                <div className="rounded-xl border border-border/60 bg-background/80 p-4">
+                  <p className="text-primary/90">```txt</p>
+                  <p className="text-muted-foreground">Next.js + React + TypeScript + Tailwind + shadcn/ui</p>
+                  <p className="text-muted-foreground">+ Framer Motion + React Hook Form + Zod</p>
+                  <p className="text-primary/90">```</p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
     </main>

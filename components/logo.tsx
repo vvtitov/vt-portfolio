@@ -8,8 +8,8 @@ export default function Logo() {
         className="dark:hidden" 
         version="1.0" 
         xmlns="http://www.w3.org/2000/svg"
-        width="60" 
-        height="60" 
+        width="48" 
+        height="48" 
         viewBox="0 0 200.000000 200.000000"
         preserveAspectRatio="xMidYMid meet"
       >
@@ -28,8 +28,8 @@ export default function Logo() {
         className="hidden dark:block" 
         version="1.0" 
         xmlns="http://www.w3.org/2000/svg"
-        width="60" 
-        height="60" 
+        width="48" 
+        height="48" 
         viewBox="0 0 200.000000 200.000000"
         preserveAspectRatio="xMidYMid meet"
       >

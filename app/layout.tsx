@@ -9,7 +9,6 @@ import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { CursorFollower } from "@/components/cursor-follower"
 import { MenuProvider } from "@/context/menu-context"
-import { ProjectsProvider } from "@/context/projects-context"
 
 // Cargar CursorFollower dinámicamente solo en el cliente
 const inter = Inter({
@@ -61,13 +60,11 @@ export default function RootLayout({
       <body className={`${inter.variable} font-sans antialiased max-w-[100vw] overflow-x-hidden`} suppressHydrationWarning>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
           <MenuProvider>
-            <ProjectsProvider>
-              <CursorFollower />
-              <Navbar />
-              {children}
-              <Footer />
-              <Toaster />
-            </ProjectsProvider>
+            <CursorFollower />
+            <Navbar />
+            {children}
+            <Footer />
+            <Toaster />
           </MenuProvider>
         </ThemeProvider>
       </body>

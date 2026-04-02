@@ -5,15 +5,17 @@ import { ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface ProjectPageProps {
-  params: {
+  params: Promise<{
     slug: string
-  }
+  }>
 }
 
-export default function ProjectPage({ params }: ProjectPageProps) {
+export default async function ProjectPage({ params }: ProjectPageProps) {
+  const { slug } = await params
+
   // In a real app, you would fetch project data based on the slug
   const project = {
-    title: "Luminance Residence",
+    title: slug ? "Luminance Residence" : "Project",
     category: "Interior Design",
     description:
       "A modern residential project that balances minimalism with warmth, creating a sophisticated living environment that reflects the client's lifestyle and aesthetic preferences.",
@@ -22,9 +24,9 @@ export default function ProjectPage({ params }: ProjectPageProps) {
     year: "2023",
     services: ["Interior Design", "Furniture Selection", "Lighting Design"],
     images: [
-      "/placeholder.svg?height=800&width=1200",
-      "/placeholder.svg?height=800&width=1200",
-      "/placeholder.svg?height=800&width=1200",
+      "/placeholder.svg",
+      "/placeholder.svg",
+      "/placeholder.svg",
     ],
   }
 
@@ -81,6 +83,8 @@ export default function ProjectPage({ params }: ProjectPageProps) {
                 src={image || "/placeholder.svg"}
                 alt={`${project.title} - Image ${index + 1}`}
                 fill
+                sizes="100vw"
+                priority={index === 0}
                 className="object-cover"
               />
             </div>

@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useEffect, useRef } from "react";
 import { Renderer, Program, Mesh, Triangle, Color } from "ogl";
 import { useTheme } from "next-themes";
@@ -151,13 +153,33 @@ const Threads: React.FC<ThreadsProps> = ({
   useEffect(() => {
     if (!containerRef.current) return;
     const container = containerRef.current;
+    const mediaQuery =
+      typeof window.matchMedia === "function"
+        ? window.matchMedia("(prefers-reduced-motion: reduce)")
+        : null;
 
-    const renderer = new Renderer({ alpha: true });
-    const gl = renderer.gl;
+    if (mediaQuery?.matches) return;
+
+    const testCanvas = document.createElement("canvas");
+    const hasWebGL =
+      !!testCanvas.getContext("webgl") || !!testCanvas.getContext("experimental-webgl");
+
+    if (!hasWebGL) return;
+
+    let renderer: Renderer;
+    let gl;
+
+    try {
+      renderer = new Renderer({ alpha: true, dpr: Math.min(window.devicePixelRatio || 1, 1.5) });
+      gl = renderer.gl;
+    } catch {
+      return;
+    }
+
     gl.clearColor(0, 0, 0, 0);
     gl.enable(gl.BLEND);
     gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-    container.appendChild(gl.canvas);
+    container.appendChild(gl.canvas as HTMLCanvasElement);
 
     const geometry = new Triangle(gl);
     
@@ -189,12 +211,13 @@ const Threads: React.FC<ThreadsProps> = ({
 
     function resize() {
       const { clientWidth, clientHeight } = container;
+      if (!clientWidth || !clientHeight) return;
       renderer.setSize(clientWidth, clientHeight);
       program.uniforms.iResolution.value.r = clientWidth;
       program.uniforms.iResolution.value.g = clientHeight;
       program.uniforms.iResolution.value.b = clientWidth / clientHeight;
     }
-    window.addEventListener("resize", resize);
+    window.addEventListener("resize", resize, { passive: true });
     resize();
 
     let currentMouse = [0.5, 0.5];
@@ -210,9 +233,8 @@ const Threads: React.FC<ThreadsProps> = ({
       targetMouse = [0.5, 0.5];
     }
     
-    // Usar eventos en el documento para capturar el movimiento del mouse incluso cuando está sobre otros elementos
     if (enableMouseInteraction) {
-      document.addEventListener("mousemove", handleMouseMove);
+      container.addEventListener("mousemove", handleMouseMove);
       container.addEventListener("mouseleave", handleMouseLeave);
     }
 
@@ -241,10 +263,12 @@ const Threads: React.FC<ThreadsProps> = ({
       window.removeEventListener("resize", resize);
 
       if (enableMouseInteraction) {
-        document.removeEventListener("mousemove", handleMouseMove);
+        container.removeEventListener("mousemove", handleMouseMove);
         container.removeEventListener("mouseleave", handleMouseLeave);
       }
-      if (container.contains(gl.canvas)) container.removeChild(gl.canvas);
+      if (container.contains(gl.canvas as HTMLCanvasElement)) {
+        container.removeChild(gl.canvas as HTMLCanvasElement);
+      }
       gl.getExtension("WEBGL_lose_context")?.loseContext();
     };
   }, [color, amplitude, distance, enableMouseInteraction, theme]);

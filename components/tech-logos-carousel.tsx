@@ -1,8 +1,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { motion, useAnimationControls } from "framer-motion"
-import { useTheme } from "next-themes"
+import { motion, useAnimationControls, useReducedMotion } from "framer-motion"
 import {
   SiReact,
   SiNextdotjs,
@@ -59,12 +58,12 @@ export function TechLogosCarousel() {
     isTablet: false
   })
   const [mounted, setMounted] = useState(false)
-  const { resolvedTheme } = useTheme()
   const containerRef = useRef<HTMLDivElement>(null)
   const [containerWidth, setContainerWidth] = useState(0)
   const [itemWidth, setItemWidth] = useState(0)
   const controls = useAnimationControls()
   const animationStarted = useRef(false)
+  const prefersReducedMotion = useReducedMotion()
 
   // Handle mounting and responsive behavior
   useEffect(() => {
@@ -80,7 +79,7 @@ export function TechLogosCarousel() {
     }
     
     updateScreenSize()
-    window.addEventListener("resize", updateScreenSize)
+    window.addEventListener("resize", updateScreenSize, { passive: true })
     
     return () => {
       window.removeEventListener("resize", updateScreenSize)
@@ -108,7 +107,14 @@ export function TechLogosCarousel() {
 
     updateWidths()
     
-    // Use ResizeObserver instead of resize event for better performance
+    if (typeof ResizeObserver === "undefined") {
+      window.addEventListener("resize", updateWidths, { passive: true })
+
+      return () => {
+        window.removeEventListener("resize", updateWidths)
+      }
+    }
+
     const resizeObserver = new ResizeObserver(updateWidths)
     if (containerRef.current) {
       resizeObserver.observe(containerRef.current)
@@ -122,6 +128,13 @@ export function TechLogosCarousel() {
   // Function to start the infinite animation
   const startAnimation = async () => {
     if (!containerWidth || !itemWidth || animationStarted.current) return
+
+    if (prefersReducedMotion) {
+      controls.stop()
+      controls.set({ x: 0 })
+      animationStarted.current = true
+      return
+    }
     
     // Calculate speed based on screen size (pixels per second)
     const speed = screenSize.isMobile ? 150 : screenSize.isTablet ? 130 : 100
@@ -152,7 +165,7 @@ export function TechLogosCarousel() {
     if (mounted && containerWidth && itemWidth && !animationStarted.current) {
       startAnimation()
     }
-  }, [mounted, containerWidth, itemWidth])
+  }, [mounted, containerWidth, itemWidth, prefersReducedMotion])
 
   // Reset animation flag when screen size changes significantly
   useEffect(() => {
@@ -160,12 +173,12 @@ export function TechLogosCarousel() {
       animationStarted.current = false
       startAnimation()
     }
-  }, [screenSize.width])
+  }, [screenSize.width, prefersReducedMotion])
 
   if (!mounted) return null
 
   // Create a duplicated array for seamless looping
-  const duplicatedLogos = [...techLogos, ...techLogos, ...techLogos, ...techLogos]
+  const duplicatedLogos = [...techLogos, ...techLogos]
 
   return (
     <div className="w-full overflow-hidden pt-20 select-none">
@@ -181,7 +194,7 @@ export function TechLogosCarousel() {
         
         <motion.div 
           ref={containerRef}
-          className="flex items-center hover:scale-115"
+          className="flex items-center"
           animate={controls}
         >
           {duplicatedLogos.map((tech, index) => {
@@ -191,7 +204,7 @@ export function TechLogosCarousel() {
                 key={`logo-${index}`}
                 data-item
                 className="flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm rounded-lg shadow-sm p-3 sm:p-4 h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 mr-6 md:mr-8 flex-shrink-0"
-                whileHover={{ y: -5, scale: 1.05 }}
+                whileHover={screenSize.isMobile ? undefined : { y: -5, scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
                 <div className="h-10 w-10 sm:h-12 sm:w-12 md:h-14 md:w-14 flex items-center justify-center">  

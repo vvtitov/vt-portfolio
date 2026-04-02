@@ -36,8 +36,17 @@ export function ContactForm() {
     setIsSubmitting(true)
 
     try {
-      // In a real app, you would send the data to your API here
-      await new Promise((resolve) => setTimeout(resolve, 1500))
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      })
+
+      if (!response.ok) {
+        throw new Error("Failed to send message")
+      }
 
       toast({
         title: "Message sent!",

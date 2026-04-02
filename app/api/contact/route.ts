@@ -4,8 +4,7 @@ export async function POST(request: Request) {
   try {
     const data = await request.json()
 
-    // Validate required fields
-    const requiredFields = ["fullName", "email", "phone", "caseDetails"]
+    const requiredFields = ["name", "email", "subject", "message"]
     for (const field of requiredFields) {
       if (!data[field]) {
         return NextResponse.json({ error: `${field} is required` }, { status: 400 })
@@ -20,7 +19,7 @@ export async function POST(request: Request) {
     // For demo purposes, we'll just return success
     return NextResponse.json({
       success: true,
-      message: "Your case evaluation request has been received. We'll contact you shortly.",
+      message: "Your message has been received. I'll get back to you shortly.",
     })
   } catch (error) {
     console.error("Error processing contact form:", error)

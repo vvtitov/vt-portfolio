@@ -3,7 +3,7 @@
 import Image from "next/image"
 import Link from "next/link"
 import { motion } from "framer-motion"
-import { ExternalLink, Github } from "lucide-react"
+import { ExternalLink, Github, Lock } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface ProjectCardProps {
@@ -42,7 +42,8 @@ export function ProjectCard({
             src={imageSrc || "/placeholder.svg"}
             alt={title || "Project"}
             fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
+            className="object-cover object-top scale-[1.02] transition-transform duration-500 group-hover:scale-[1.07]"
           />
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
         </div>
@@ -71,7 +72,7 @@ export function ProjectCard({
                 </Link>
               </Button>
             )}
-            {githubLink && (
+            {githubLink ? (
               <Button asChild size="sm" variant="outline" className="flex-1">
                 <Link
                   href={githubLink}
@@ -82,6 +83,17 @@ export function ProjectCard({
                   Code
                   <Github className="ml-2 h-4 w-4" />
                 </Link>
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                className="flex-1"
+                disabled
+                aria-disabled="true"
+              >
+                Private
+                <Lock className="ml-2 h-4 w-4" />
               </Button>
             )}
           </div>
