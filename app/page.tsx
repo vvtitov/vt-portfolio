@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, ExternalLink, Github, Linkedin, Mail, Download, ArrowDownRight } from "lucide-react"
+import { ArrowRight, ExternalLink, Download, ArrowDownRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AnimatedCounter } from "@/components/animated-counter"
 import { AnimatedText } from "@/components/animated-text"
@@ -16,6 +16,12 @@ import { ProjectsProvider } from "@/context/projects-context"
 import dynamic from "next/dynamic"
 
 const ContactForm = dynamic(() => import("@/components/contact-form").then((mod) => mod.ContactForm))
+const ContactIconLinks = dynamic(() =>
+  import("@/components/contact-icon-links").then((mod) => mod.ContactIconLinks),
+)
+const ContactEmailButton = dynamic(() =>
+  import("@/components/contact-email-button").then((mod) => mod.ContactEmailButton),
+)
 const TechLogosCarousel = dynamic(() =>
   import("@/components/tech-logos-carousel").then((mod) => mod.TechLogosCarousel),
 )
@@ -218,28 +224,8 @@ export default function Home() {
               </motion.div>
 
 
-              <div className="flex gap-4 items-center justify-center md:justify-start">
-                <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
-                  <Button variant="outline" size="icon" asChild>
-                    <Link href="https://github.com/vvtitov" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
-                      <Github className="h-5 w-5" />
-                    </Link>
-                  </Button>
-                </motion.div>
-                <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
-                  <Button variant="outline" size="icon" asChild>
-                    <Link href="https://linkedin.com/in/vladislavtitov" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
-                      <Linkedin className="h-5 w-5" />
-                    </Link>
-                  </Button>
-                </motion.div>
-                <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
-                  <Button variant="outline" size="icon" asChild>
-                    <Link href="mailto:vladislavtitov.r@gmail.com" aria-label="Email">
-                      <Mail className="h-5 w-5" />
-                    </Link>
-                  </Button>
-                </motion.div>
+              <div className="flex flex-wrap gap-4 items-center justify-center md:justify-start">
+                <ContactIconLinks size="sm" />
                 <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
                   <Button variant="outline" size="icon" asChild>
                     <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="Download Resume">
@@ -498,30 +484,11 @@ export default function Home() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5 }}
             >
-              <h3 className="text-2xl font-bold mb-6">Contact Information</h3>
-              <div className="space-y-4 mb-8">
-                <div className="flex items-start">
-                  <Mail className="h-5 w-5 mr-3 mt-1 text-primary" />
-                  <div>
-                    <h4 className="font-medium">Email</h4>
-                    <p className="text-muted-foreground">vladislavtitov.r@gmail.com</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <Linkedin className="h-5 w-5 mr-3 mt-1 text-primary" />
-                  <div>
-                    <h4 className="font-medium">LinkedIn</h4>
-                    <p className="text-muted-foreground">linkedin.com/in/vladislavtitov</p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <Github className="h-5 w-5 mr-3 mt-1 text-primary" />
-                  <div>
-                    <h4 className="font-medium">GitHub</h4>
-                    <p className="text-muted-foreground">github.com/vvtitov</p>
-                  </div>
-                </div>
-              </div>
+              <h3 className="text-2xl font-bold mb-3">Contact Information</h3>
+              <p className="text-muted-foreground mb-6 text-sm">
+                Send me a message via form or the usual channels.
+              </p>
+              <ContactIconLinks size="md" className="mb-8" />
 
               <h3 className="text-2xl font-bold mb-6">Let's Connect</h3>
               <p className="text-muted-foreground mb-6">
@@ -529,12 +496,7 @@ export default function Home() {
               </p>
 
               <div className="flex gap-4">
-                <Button asChild className="group">
-                  <Link href="mailto:vladislavtitov.r@gmail.com">
-                    Send Email
-                    <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-                  </Link>
-                </Button>
+                <ContactEmailButton />
                 <Button asChild variant="outline">
                   <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer">
                     Download Resume

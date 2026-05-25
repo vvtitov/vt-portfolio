@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { Github, Linkedin, Mail } from "lucide-react"
+
+import { ContactIconLinks } from "@/components/contact-icon-links"
 
 export function Footer() {
   return (
@@ -14,33 +15,7 @@ export function Footer() {
               Thanks for visiting my portfolio! <br />
               Let's create something amazing together.
             </p>
-            <div className="flex space-x-4">
-              <Link
-                href="https://github.com/vvtitov"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="GitHub"
-              >
-                <Github className="h-5 w-5" />
-              </Link>
-              <Link
-                href="https://linkedin.com/in/vladislavtitov"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="LinkedIn"
-              >
-                <Linkedin className="h-5 w-5" />
-              </Link>
-              <Link
-                href="mailto:vladislavtitov.r@gmail.com"
-                className="text-muted-foreground hover:text-foreground transition-colors"
-                aria-label="Email"
-              >
-                <Mail className="h-5 w-5" />
-              </Link>
-            </div>
+            <ContactIconLinks size="sm" />
           </div>
 
           <div>
