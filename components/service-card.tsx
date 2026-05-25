@@ -1,47 +1,42 @@
-import Link from "next/link"
-import { ArrowRight, Building, Box, Layout, MessageSquare, Monitor, Palette, type LucideIcon } from "lucide-react"
+import { ArrowRight, Code2, Gauge, Layout, Palette, TestTube2, type LucideIcon } from "lucide-react"
 
 interface ServiceCardProps {
   title: string
   description: string
   icon: string
-  href: string
 }
 
-export function ServiceCard({ title, description, icon, href }: ServiceCardProps) {
+export function ServiceCard({ title, description, icon }: ServiceCardProps) {
   const IconComponent = getIcon(icon)
 
   return (
-    <div className="p-8 border border-gray-200 hover:border-gray-300 transition-colors group">
+    <div className="group rounded-lg border border-border bg-card p-8 shadow-sm transition-colors hover:border-primary/30">
       <div className="mb-6">
-        <IconComponent className="h-8 w-8" />
+        <IconComponent className="h-8 w-8 text-primary" />
       </div>
-      <h3 className="text-xl font-medium mb-3">{title}</h3>
-      <p className="text-gray-600 mb-6">{description}</p>
-      <Link href={href} className="inline-flex items-center text-sm font-medium text-black">
-        Learn More
+      <h3 className="text-xl font-bold mb-3">{title}</h3>
+      <p className="text-muted-foreground mb-6 leading-relaxed">{description}</p>
+      <span className="inline-flex items-center text-sm font-medium text-foreground">
+        Included in project scope
         <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-      </Link>
+      </span>
     </div>
   )
 }
 
 function getIcon(iconName: string): LucideIcon {
   switch (iconName) {
-    case "Building":
-      return Building
-    case "Box":
-      return Box
+    case "Code2":
+      return Code2
+    case "Gauge":
+      return Gauge
     case "Layout":
       return Layout
-    case "MessageSquare":
-      return MessageSquare
-    case "Monitor":
-      return Monitor
     case "Palette":
       return Palette
+    case "TestTube2":
+      return TestTube2
     default:
       return Layout
   }
 }
-

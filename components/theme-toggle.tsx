@@ -1,64 +1,53 @@
 "use client"
 
-import { useTheme } from "next-themes"
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { Moon, Sun } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { useThemePreference } from "@/components/theme-provider"
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme()
+  const { resolvedTheme, setTheme } = useThemePreference()
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
-  // Determinar el tema predeterminado basado en las preferencias del sistema
-  const prefersDarkMode = typeof window !== 'undefined' && window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-  const defaultTheme = prefersDarkMode ? "dark" : "light"
-  
-  // Usar el tema real si está montado, o el tema predeterminado si no
-  const currentTheme = mounted ? theme : defaultTheme
-
-  // Renderizar un placeholder con las mismas dimensiones mientras se monta
   if (!mounted) {
     return (
-      <Button
-        variant="link"
-        size="icon"
-        aria-label="Loading theme toggle"
-        className="opacity-0"
-      >
-        <div className="relative h-5 w-5"></div>
+      <Button variant="link" size="icon" aria-label="Loading theme toggle" className="opacity-0">
+        <div className="relative h-5 w-5" />
       </Button>
     )
   }
+
+  const isDark = resolvedTheme === "dark"
 
   return (
     <Button
       variant="link"
       size="icon"
-      onClick={() => setTheme(currentTheme === "dark" ? "light" : "dark")}
+      onClick={() => setTheme(isDark ? "light" : "dark")}
       aria-label="Toggle theme"
       className="opacity-100"
     >
       <motion.div
-        animate={{ rotate: currentTheme === "dark" ? 0 : 180 }}
+        animate={{ rotate: isDark ? 0 : 180 }}
         transition={{ duration: 0.5, type: "spring" }}
         className="relative h-5 w-5"
       >
         <motion.div
-          animate={{ opacity: currentTheme === "dark" ? 1 : 0 }}
-          initial={{ opacity: currentTheme === "dark" ? 1 : 0 }}
+          animate={{ opacity: isDark ? 1 : 0 }}
+          initial={{ opacity: isDark ? 1 : 0 }}
           transition={{ duration: 0.25 }}
           className="absolute inset-0"
         >
           <Moon className="h-5 w-5" />
         </motion.div>
         <motion.div
-          animate={{ opacity: currentTheme === "light" ? 1 : 0 }}
-          initial={{ opacity: currentTheme === "light" ? 1 : 0 }}
+          animate={{ opacity: isDark ? 0 : 1 }}
+          initial={{ opacity: isDark ? 0 : 1 }}
           transition={{ duration: 0.25 }}
           className="absolute inset-0"
         >

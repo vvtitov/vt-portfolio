@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from "react";
 import { Renderer, Program, Mesh, Triangle, Color } from "ogl";
-import { useTheme } from "next-themes";
+import { useThemePreference } from "@/components/theme-provider";
 
 interface ThreadsProps {
   color?: [number, number, number];
@@ -148,7 +148,7 @@ const Threads: React.FC<ThreadsProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameId = useRef<number | undefined>(undefined);
-  const { theme } = useTheme();
+  const { resolvedTheme } = useThemePreference();
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -199,7 +199,7 @@ const Threads: React.FC<ThreadsProps> = ({
     
     // Determinar el color basado en el tema
       const themeColor =
-        theme === "dark"
+        resolvedTheme === "dark"
           ? [1, 1, 1]
           : [0.1, 0.1, 0.1];
 
@@ -339,7 +339,7 @@ const Threads: React.FC<ThreadsProps> = ({
       }
       teardown?.();
     };
-  }, [color, amplitude, distance, enableMouseInteraction, theme]);
+  }, [color, amplitude, distance, enableMouseInteraction, resolvedTheme]);
 
   return (
     <div ref={containerRef} className="w-full h-full absolute inset-0" {...rest} />

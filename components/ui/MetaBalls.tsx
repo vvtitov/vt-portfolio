@@ -9,7 +9,7 @@ import {
   Camera,
 } from "ogl";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useTheme } from "next-themes";
+import { useThemePreference } from "@/components/theme-provider";
 
 type MetaBallsProps = {
   color?: string;
@@ -144,7 +144,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isMobile = useIsMobile();
-  const { theme, resolvedTheme } = useTheme();
+  const { resolvedTheme } = useThemePreference();
   const [mounted, setMounted] = useState(false);
   
   // Set mounted to true on client side
@@ -152,8 +152,7 @@ const MetaBalls: React.FC<MetaBallsProps> = ({
     setMounted(true);
   }, []);
   
-  // Determine if we're in dark mode
-  const isDarkTheme = mounted && (resolvedTheme === "dark" || theme === "dark");
+  const isDarkTheme = mounted && resolvedTheme === "dark";
   
   // Set colors based on theme
   const themeColor = isDarkTheme ? color : "#333333";

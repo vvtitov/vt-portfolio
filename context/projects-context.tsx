@@ -1,18 +1,7 @@
 "use client"
 
 import { createContext, useContext, useState, ReactNode } from "react"
-import { projects } from "@/data/projects"
-
-type Project = {
-  id: number
-  title: string
-  description: string
-  tags: string[]
-  imageSrc: string
-  link: string
-  githubLink?: string
-  category: string[]
-}
+import { projects, type Project } from "@/data/projects"
 
 type ProjectsContextType = {
   filteredProjects: Project[]

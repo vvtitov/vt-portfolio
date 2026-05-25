@@ -9,6 +9,7 @@ import { Footer } from "@/components/footer"
 import { ThemeProvider } from "@/components/theme-provider"
 import { Toaster } from "@/components/ui/toaster"
 import { MenuProvider } from "@/context/menu-context"
+import { siteUrl } from "@/lib/site"
 
 const inter = Inter({
   subsets: ["latin"],
@@ -17,7 +18,7 @@ const inter = Inter({
   adjustFontFallback: true,
 })
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.vtitov.dev'),
+  metadataBase: new URL(siteUrl),
   title: "Vladislav Titov | Portfolio",
   description:
     "Portfolio of a creative developer and designer specializing in building engaging digital experiences with modern web technologies.",
@@ -41,7 +42,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://www.vtitov.dev/",
+    url: siteUrl,
     title: "Vladislav Titov | Developer",
     description:
       "Portfolio of a creative developer and designer specializing in building engaging digital experiences with modern web technologies.",
@@ -80,7 +81,7 @@ export default function RootLayout({
         <link rel="icon" href="/icon.ico" type="image/x-icon" />
       </head>
       <body className={`${inter.variable} font-sans antialiased max-w-[100vw] overflow-x-hidden`} suppressHydrationWarning>
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider>
           <MenuProvider>
             <ClientEffects />
             <Navbar />

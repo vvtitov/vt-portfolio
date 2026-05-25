@@ -22,9 +22,9 @@ const TechLogosCarousel = dynamic(() =>
 
 const Threads = dynamic(() => import("@/components/ui/threads-bg"), {
   ssr: false,
-  loading: () => (
+      loading: () => (
     <div
-      className="absolute inset-0 bg-gradient-to-b from-muted/50 via-background/80 to-muted/30 dark:from-muted/20 dark:via-background/60 dark:to-muted/10"
+      className="absolute inset-0 bg-gradient-to-b from-muted/50 via-background/80 to-muted/30"
       aria-hidden
     />
   ),
@@ -74,7 +74,7 @@ export default function Home() {
       <section ref={ref} className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
         <motion.div style={{ y, opacity }} className="absolute inset-0 z-0 min-h-full">
           <Threads />
-          <div className="absolute inset-0 bg-foreground/10 dark:bg-white/30 z-10 " />
+          <div className="absolute inset-0 bg-foreground/10 z-10" />
         </motion.div>
 
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
@@ -109,7 +109,7 @@ export default function Home() {
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 mt-1" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline" className="border-secondary-foreground text-foreground hover:bg-white/40 dark:hover:bg-black/20 bg-secondary/20">
+              <Button asChild size="lg" variant="outline" className="border-secondary-foreground text-foreground hover:bg-secondary/40 bg-secondary/20">
                 <Link href="#contact">Get in Touch</Link>
               </Button>
             </motion.div>
@@ -121,8 +121,8 @@ export default function Home() {
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
         >
-          <div className="w-6 h-8 rounded-full border-2 border-black dark:border-white flex justify-center items-start p-1">
-            <div className="w-1 h-2 bg-black dark:bg-white rounded-full" />
+          <div className="w-6 h-8 rounded-full border-2 border-foreground flex justify-center items-start p-1">
+            <div className="w-1 h-2 bg-foreground rounded-full" />
           </div>
         </motion.div>
       </section>

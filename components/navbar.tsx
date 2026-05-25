@@ -315,10 +315,24 @@ export function Navbar() {
               </nav>
               <div className="flex flex-col gap-2 mr-10">
                 <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
-                  <Link href={getHref("contact")}><Linkedin className="w-5 h-5" /></Link>
+                  <Link
+                    href="https://linkedin.com/in/vladislavtitov"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="LinkedIn"
+                  >
+                    <Linkedin className="w-5 h-5" />
+                  </Link>
                 </Button>
                 <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
-                  <Link href={getHref("contact")}><Github className="w-5 h-5" /></Link>
+                  <Link
+                    href="https://github.com/vvtitov"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    aria-label="GitHub"
+                  >
+                    <Github className="w-5 h-5" />
+                  </Link>
                 </Button>
               </div>
             </div>

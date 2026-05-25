@@ -1,6 +1,19 @@
-export const projects = [
+export type Project = {
+  id: number
+  slug: string
+  title: string
+  description: string
+  tags: string[]
+  imageSrc: string
+  link: string
+  githubLink?: string
+  category: string[]
+}
+
+export const projects: Project[] = [
   {
     id: 1,
+    slug: "three-mangos-agency",
     title: "Three Mangos Agency",
     description:
       "A modern fully responsive landing page for a marketing agency with smooth and custom animations.",
@@ -11,8 +24,10 @@ export const projects = [
   },
   {
     id: 2,
+    slug: "luna-huapi",
     title: "Luna Huapi",
-    description: "A beatutiful fully responsive landing page for a complex of apartments in San Carlos de Bariloche, Argentina.",
+    description:
+      "A beautiful fully responsive landing page for a complex of apartments in San Carlos de Bariloche, Argentina.",
     tags: ["Vite", "React", "TypeScript", "Framer Motion", "Tailwind CSS", "Shadcn", "i18n", "Playwright"],
     imageSrc: "/images/projects/lunahuapi.webp",
     link: "https://lunahuapi.com",
@@ -20,6 +35,7 @@ export const projects = [
   },
   {
     id: 3,
+    slug: "ranking-salud",
     title: "Ranking Salud",
     description: "A platform that ranks health services based in user reviews and ratings.",
     tags: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion", "Shadcn", "SQL", "PostgreSQL", "Supabase", "Playwright"],
@@ -30,6 +46,7 @@ export const projects = [
   },
   {
     id: 4,
+    slug: "gastroia",
     title: "GastroIA",
     description: "All in one platform for restaurants and bars that integrates AI to improve the customer experience.",
     tags: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion", "Shadcn", "SQL", "Payments", "Subscriptions", "Supabase", "OpenAI", "MCP", "n8n", "Playwright"],
@@ -40,6 +57,7 @@ export const projects = [
   },
   {
     id: 5,
+    slug: "iana-furnitures",
     title: "Iana Furnitures",
     description: "A modern website for a furniture brand focused on showcasing products with a clean and polished visual experience.",
     tags: ["Vite", "React", "TypeScript", "Tailwind CSS", "Framer Motion", "GSAP", "Shadcn", "i18n", "Supabase", "Playwright"],
@@ -49,11 +67,12 @@ export const projects = [
   },
   {
     id: 6,
+    slug: "strobo",
     title: "Strobo",
     description: "A modern web experience for Strobo with a strong visual identity and a responsive interface.",
     tags: ["Vite", "React", "TypeScript", "Tailwind CSS", "Framer Motion", "GSAP", "Shadcn", "i18n", "Supabase", "Playwright"],
     imageSrc: "/images/projects/strobo.webp",
     link: "https://strobo.vercel.app",
     category: ["web", "ui"],
-  }
+  },
 ]

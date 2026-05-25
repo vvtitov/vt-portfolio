@@ -203,7 +203,7 @@ export function TechLogosCarousel() {
               <motion.div 
                 key={`logo-${index}`}
                 data-item
-                className="flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm rounded-lg shadow-sm p-3 sm:p-4 h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 mr-6 md:mr-8 flex-shrink-0"
+                className="flex flex-col items-center justify-center bg-card/80 backdrop-blur-sm rounded-lg p-3 sm:p-4 h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 mr-6 md:mr-8 flex-shrink-0"
                 whileHover={screenSize.isMobile ? undefined : { y: -5, scale: 1.05 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >

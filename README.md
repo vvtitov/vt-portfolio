@@ -31,12 +31,12 @@ A modern, interactive portfolio website built with Next.js, React, and Framer Mo
 
 - **Frontend Framework**: Next.js 15
 - **UI Library**: React 19
-- **Styling**: Tailwind CSS
+- **Styling**: Tailwind CSS 4 (CSS-first config, `prefers-color-scheme` + optional `data-theme`)
 - **Animations**: Framer Motion
 - **UI Components**: Radix UI
 - **Icons**: Lucide React, React Icons
 - **Form Handling**: React Hook Form with Zod validation
-- **Theme Management**: next-themes
+- **Theme Management**: System preference with optional manual toggle (`data-theme`)
 
 ## 🛠️ Getting Started
 
@@ -69,6 +69,14 @@ A modern, interactive portfolio website built with Next.js, React, and Framer Mo
 
 4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
+## 🌐 Deployment (Vercel)
+
+- **Production URL:** [https://vtitov-portfolio.vercel.app](https://vtitov-portfolio.vercel.app)
+- Copy `.env.example` to `.env.local` for local development.
+- Set `NEXT_PUBLIC_SITE_URL` in Vercel when attaching a custom domain (e.g. `https://www.vtitov.dev`).
+- In Vercel → Project → Domains, add `www.vtitov.dev` to **this** repository’s project (not other `vtitov`/`vt-portfolio` projects).
+- Legacy host `vt-portfolio.vercel.app` redirects to `vtitov-portfolio.vercel.app` via `vercel.json`.
+
 ## 📱 Responsive Behavior
 
 - **Mobile Devices**: Custom cursor and MetaBalls component are disabled for better performance
@@ -87,9 +95,8 @@ The portfolio features an automatic theme detection system that:
 vt-portfolio/
 ├── app/                  # Next.js app router structure
 │   ├── api/              # API routes
-│   ├── portfolio/        # Portfolio pages
-│   ├── projects/         # Projects page
-│   ├── services/         # Services page
+│   ├── projects/         # Projects list + [slug] detail pages
+│   ├── services/         # Development services page
 │   └── page.tsx          # Homepage
 ├── components/           # Reusable components
 │   ├── ui/               # UI components (MetaBalls, threads-bg, etc.)

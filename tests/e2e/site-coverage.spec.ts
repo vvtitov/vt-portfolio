@@ -8,24 +8,25 @@ test.describe("Website coverage", () => {
     await expect(page.getByText(/comprehensive showcase/i)).toBeVisible()
   })
 
-  test("portfolio page renders expected content", async ({ page }) => {
-    await page.goto("/portfolio")
-
-    await expect(page.getByRole("heading", { level: 1, name: /My Portfolio/i })).toBeVisible()
-    await expect(page.getByText(/curated selection/i)).toBeVisible()
-  })
-
   test("services page renders expected content", async ({ page }) => {
     await page.goto("/services")
 
-    await expect(page.getByRole("heading", { level: 1, name: /Our Services/i })).toBeVisible()
-    await expect(page.getByText(/comprehensive suite of design services/i)).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: /Development Services/i })).toBeVisible()
+    await expect(page.getByText(/Frontend development/i)).toBeVisible()
   })
 
-  test("portfolio dynamic detail page renders expected content", async ({ page }) => {
-    await page.goto("/portfolio/luminance-residence")
+  test("project detail page renders expected content", async ({ page }) => {
+    await page.goto("/projects/luna-huapi")
 
-    await expect(page.getByRole("heading", { level: 1, name: /Luminance Residence/i })).toBeVisible()
-    await expect(page.getByRole("heading", { level: 2, name: /Project Details/i })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 1, name: /Luna Huapi/i })).toBeVisible()
+    await expect(page.getByRole("heading", { level: 2, name: /Project Links/i })).toBeVisible()
+  })
+
+  test("legacy portfolio routes redirect to projects", async ({ page }) => {
+    await page.goto("/portfolio")
+    await expect(page).toHaveURL(/\/projects$/)
+
+    await page.goto("/portfolio/luna-huapi")
+    await expect(page).toHaveURL(/\/projects\/luna-huapi$/)
   })
 })

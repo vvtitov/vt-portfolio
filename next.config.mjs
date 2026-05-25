@@ -12,6 +12,20 @@ const nextConfig = {
     parallelServerBuildTraces: true,
     parallelServerCompiles: true,
   },
+  async redirects() {
+    return [
+      {
+        source: "/portfolio",
+        destination: "/projects",
+        permanent: true,
+      },
+      {
+        source: "/portfolio/:slug",
+        destination: "/projects/:slug",
+        permanent: true,
+      },
+    ]
+  },
 }
 
 mergeConfig(nextConfig, userConfig)
