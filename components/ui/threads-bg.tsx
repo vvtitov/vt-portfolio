@@ -193,7 +193,9 @@ const Threads: React.FC<ThreadsProps> = ({
       gl.clearColor(0, 0, 0, 0);
       gl.enable(gl.BLEND);
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-      container.appendChild(gl.canvas as HTMLCanvasElement);
+      const canvas = gl.canvas as HTMLCanvasElement;
+      canvas.style.pointerEvents = "none";
+      container.appendChild(canvas);
 
       const geometry = new Triangle(gl);
     
@@ -253,10 +255,24 @@ const Threads: React.FC<ThreadsProps> = ({
 
       function handleMouseMove(e: MouseEvent) {
         const rect = container.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+
+        const inside =
+          e.clientX >= rect.left &&
+          e.clientX <= rect.right &&
+          e.clientY >= rect.top &&
+          e.clientY <= rect.bottom;
+
+        if (!inside) {
+          targetMouse = [0.5, 0.5];
+          return;
+        }
+
         const x = (e.clientX - rect.left) / rect.width;
         const y = 1.0 - (e.clientY - rect.top) / rect.height;
-        targetMouse = [x, y];
+        targetMouse = [Math.min(1, Math.max(0, x)), Math.min(1, Math.max(0, y))];
       }
+
       function handleMouseLeave() {
         targetMouse = [0.5, 0.5];
       }
@@ -264,7 +280,20 @@ const Threads: React.FC<ThreadsProps> = ({
       function handleTouchMove(e: TouchEvent) {
         if (e.touches.length === 0) return;
         const rect = container.getBoundingClientRect();
+        if (!rect.width || !rect.height) return;
+
         const touch = e.touches[0];
+        const inside =
+          touch.clientX >= rect.left &&
+          touch.clientX <= rect.right &&
+          touch.clientY >= rect.top &&
+          touch.clientY <= rect.bottom;
+
+        if (!inside) {
+          targetMouse = [0.5, 0.5];
+          return;
+        }
+
         const x = (touch.clientX - rect.left) / rect.width;
         const y = 1.0 - (touch.clientY - rect.top) / rect.height;
         targetMouse = [Math.min(1, Math.max(0, x)), Math.min(1, Math.max(0, y))];
@@ -275,11 +304,11 @@ const Threads: React.FC<ThreadsProps> = ({
       }
 
       if (enableMouseInteraction) {
-        container.addEventListener("mousemove", handleMouseMove);
-        container.addEventListener("mouseleave", handleMouseLeave);
-        container.addEventListener("touchmove", handleTouchMove, { passive: true });
-        container.addEventListener("touchend", handleTouchEnd);
-        container.addEventListener("touchcancel", handleTouchEnd);
+        window.addEventListener("mousemove", handleMouseMove, { passive: true });
+        document.documentElement.addEventListener("mouseleave", handleMouseLeave);
+        window.addEventListener("touchmove", handleTouchMove, { passive: true });
+        window.addEventListener("touchend", handleTouchEnd);
+        window.addEventListener("touchcancel", handleTouchEnd);
       }
 
       function update(t: number) {
@@ -308,11 +337,11 @@ const Threads: React.FC<ThreadsProps> = ({
         window.removeEventListener("resize", resize);
 
         if (enableMouseInteraction) {
-          container.removeEventListener("mousemove", handleMouseMove);
-          container.removeEventListener("mouseleave", handleMouseLeave);
-          container.removeEventListener("touchmove", handleTouchMove);
-          container.removeEventListener("touchend", handleTouchEnd);
-          container.removeEventListener("touchcancel", handleTouchEnd);
+          window.removeEventListener("mousemove", handleMouseMove);
+          document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
+          window.removeEventListener("touchmove", handleTouchMove);
+          window.removeEventListener("touchend", handleTouchEnd);
+          window.removeEventListener("touchcancel", handleTouchEnd);
         }
         if (container.contains(gl.canvas as HTMLCanvasElement)) {
           container.removeChild(gl.canvas as HTMLCanvasElement);
@@ -342,7 +371,7 @@ const Threads: React.FC<ThreadsProps> = ({
   }, [color, amplitude, distance, enableMouseInteraction, resolvedTheme]);
 
   return (
-    <div ref={containerRef} className="w-full h-full absolute inset-0" {...rest} />
+    <div ref={containerRef} className="pointer-events-none w-full h-full absolute inset-0" {...rest} />
   );
 };
 

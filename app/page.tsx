@@ -4,7 +4,7 @@ import { useRef } from "react"
 import { motion, useScroll, useTransform } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
-import { ArrowRight, ExternalLink, Download, ArrowDownRight } from "lucide-react"
+import { ArrowRight, Download, ArrowDownRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { AnimatedCounter } from "@/components/animated-counter"
 import { AnimatedText } from "@/components/animated-text"
@@ -18,9 +18,6 @@ import dynamic from "next/dynamic"
 const ContactForm = dynamic(() => import("@/components/contact-form").then((mod) => mod.ContactForm))
 const ContactIconLinks = dynamic(() =>
   import("@/components/contact-icon-links").then((mod) => mod.ContactIconLinks),
-)
-const ContactEmailButton = dynamic(() =>
-  import("@/components/contact-email-button").then((mod) => mod.ContactEmailButton),
 )
 const TechLogosCarousel = dynamic(() =>
   import("@/components/tech-logos-carousel").then((mod) => mod.TechLogosCarousel),
@@ -79,8 +76,8 @@ export default function Home() {
       {/* Hero Section */}
       <section ref={ref} className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
         <motion.div style={{ y, opacity }} className="absolute inset-0 z-0 min-h-full">
-          <Threads />
-          <div className="absolute inset-0 bg-foreground/10 z-10" />
+          <Threads enableMouseInteraction={true}/>
+          <div className="absolute inset-0 bg-foreground/10 z-10 pointer-events-none" />
         </motion.div>
 
         <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
@@ -271,7 +268,7 @@ export default function Home() {
           </div>
 
           {/* Technologies Section (moved to bottom of Experience) */}
-          <div className="pt-10 pb-12 md:py-8 bg-background">
+          <div className="pt-10 pb-16 md:pt-8 md:pb-16 bg-background">
             <div className="container mx-auto px-4 sm:px-6 lg:px-8">
               {/* Technology Logos Carousel */}
               <motion.div
@@ -288,7 +285,7 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section id="projects" className="pt-10 pb-24 md:pt-32 md:pb-32 bg-muted/30">
+      <section id="projects" className="pt-20 pb-24 md:pt-32 md:pb-32 bg-muted/30 mt-10">
         <ProjectsProvider>
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <div className="max-w-3xl mx-auto text-center mb-16">
@@ -453,75 +450,53 @@ export default function Home() {
       {/* Contact Section */}
       <section id="contact" className="pt-24 pb-10 md:py-32 bg-muted/30">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="max-w-3xl mx-auto text-center mb-16">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 0.5 }}
+            className="max-w-2xl mx-auto text-center mb-10 md:mb-14"
+          >
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 tracking-tight">
+              Get in <span className="text-primary">Touch</span>
+            </h2>
+            <p className="text-muted-foreground leading-relaxed text-pretty">
+              Tell me about your project in the form below, or reach out through email and socials.
+            </p>
+          </motion.div>
+
+          <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 lg:grid-cols-5 lg:gap-10">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 24 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5 }}
+              className="lg:col-span-3 rounded-lg border border-border bg-card p-6 md:p-8"
             >
-              <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">
-                Get in <span className="text-primary">Touch</span>
-              </h2>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5, delay: 0.2 }}
-            >
-              <p className="text-muted-foreground mb-8 leading-relaxed px-4 md:px-0">
-                Have a project in mind or want to discuss potential collaborations? I'd love to hear from you!
-              </p>
-            </motion.div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 max-w-5xl mx-auto">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5 }}
-            >
-              <h3 className="text-2xl font-bold mb-3">Contact Information</h3>
-              <p className="text-muted-foreground mb-6 text-sm">
-                Send me a message via form or the usual channels.
-              </p>
-              <ContactIconLinks size="md" className="mb-8" />
-
-              <h3 className="text-2xl font-bold mb-6">Let's Connect</h3>
-              <p className="text-muted-foreground mb-6">
-                I'm always open to discussing new projects, creative ideas, or opportunities to be part of your vision.
-              </p>
-
-              <div className="flex gap-4">
-                <ContactEmailButton />
-                <Button asChild variant="outline">
-                  <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer">
-                    Download Resume
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </Link>
-                </Button>
-              </div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.5 }}
-              className="bg-card p-8 rounded-lg shadow-sm border"
-            >
-              <h3 className="text-2xl font-bold mb-6">Send Me a Message</h3>
+              <h3 className="text-lg font-semibold mb-1">Send a message</h3>
+              <p className="text-sm text-muted-foreground mb-6">I usually reply within a couple of days.</p>
               <ContactForm />
             </motion.div>
+
+            <motion.aside
+              initial={{ opacity: 0, y: 24 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-100px" }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="flex flex-col justify-center lg:col-span-2"
+            >
+              <p className="text-sm font-medium text-foreground mb-1">Other channels</p>
+              <p className="text-sm text-muted-foreground mb-5">
+                Tap an icon to open email, LinkedIn, or GitHub.
+              </p>
+              <ContactIconLinks size="md" />
+            </motion.aside>
           </div>
         </div>
       </section>
 
       {/* Stack Markdown Section */}
-      <section id="stack" className="pt-8 pb-20 md:py-28 bg-background">
+      <section id="stack" className="pt-20 pb-20 md:py-28 bg-background">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
