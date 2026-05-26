@@ -152,6 +152,9 @@ body.custom-cursor-enabled a,
 body.custom-cursor-enabled button,
 body.custom-cursor-enabled input,
 body.custom-cursor-enabled textarea,
-body.custom-cursor-enabled [role="button"] {
+body.custom-cursor-enabled select,
+body.custom-cursor-enabled label,
+body.custom-cursor-enabled [role="button"],
+body.custom-cursor-enabled [data-cursor="pointer"] {
   cursor: none !important;
 }

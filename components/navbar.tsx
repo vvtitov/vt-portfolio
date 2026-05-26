@@ -4,11 +4,19 @@ import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
-import { ArrowDownRight, ArrowRight, Download, Github, Linkedin } from "lucide-react"
+import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
+import { ContactIconLinks } from "@/components/contact-icon-links"
 import { useMenu } from "@/context/menu-context"
 import Logo from "./logo"
+
+const MOBILE_NAV_LINKS = [
+  { href: "about", label: "About" },
+  { href: "experience", label: "Experience" },
+  { href: "projects", label: "Projects" },
+  { href: "contact", label: "Contact" },
+] as const
 
 export function Navbar() {
   const { isMenuOpen, setIsMenuOpen } = useMenu()
@@ -20,41 +28,28 @@ export function Navbar() {
   const pathname = usePathname()
   const isHomePage = pathname === "/"
 
-  // Bloquea completamente el scroll del documento cuando el menú móvil está abierto.
+  // Bloquea el scroll al abrir el menú y lo restaura al cerrarlo sin animación.
   useEffect(() => {
+    if (!isMenuOpen) return
+
     const { body, documentElement } = document
+    scrollPositionRef.current = window.scrollY
+    lastScrollY.current = scrollPositionRef.current
 
-    if (isMenuOpen) {
-      scrollPositionRef.current = window.scrollY
+    body.style.position = "fixed"
+    body.style.top = `-${scrollPositionRef.current}px`
+    body.style.left = "0"
+    body.style.right = "0"
+    body.style.width = "100%"
+    body.style.overflow = "hidden"
+    body.style.touchAction = "none"
 
-      body.style.position = "fixed"
-      body.style.top = `-${scrollPositionRef.current}px`
-      body.style.left = "0"
-      body.style.right = "0"
-      body.style.width = "100%"
-      body.style.overflow = "hidden"
-      body.style.touchAction = "none"
-
-      documentElement.style.overflow = "hidden"
-      documentElement.style.overscrollBehavior = "none"
-    } else {
-      const scrollY = Math.abs(parseInt(body.style.top || "0", 10)) || scrollPositionRef.current
-
-      body.style.position = ""
-      body.style.top = ""
-      body.style.left = ""
-      body.style.right = ""
-      body.style.width = ""
-      body.style.overflow = ""
-      body.style.touchAction = ""
-
-      documentElement.style.overflow = ""
-      documentElement.style.overscrollBehavior = ""
-
-      window.scrollTo(0, scrollY)
-    }
+    documentElement.style.overflow = "hidden"
+    documentElement.style.overscrollBehavior = "none"
 
     return () => {
+      const scrollY = scrollPositionRef.current
+
       body.style.position = ""
       body.style.top = ""
       body.style.left = ""
@@ -65,6 +60,12 @@ export function Navbar() {
 
       documentElement.style.overflow = ""
       documentElement.style.overscrollBehavior = ""
+
+      const previousScrollBehavior = documentElement.style.scrollBehavior
+      documentElement.style.scrollBehavior = "auto"
+      window.scrollTo(0, scrollY)
+      documentElement.style.scrollBehavior = previousScrollBehavior
+      lastScrollY.current = scrollY
     }
   }, [isMenuOpen])
 
@@ -140,11 +141,16 @@ export function Navbar() {
     return isHomePage ? `#${section}` : `/#${section}`
   }
 
-  // Estilo común para los enlaces del menú con underline en hover
+  // Estilo común para los enlaces del menú desktop con underline en hover
   const menuLinkStyle = `relative hover:text-primary transition-colors
     after:absolute after:left-0 after:right-0 after:bottom-[-8px] after:h-[2px] 
     after:bg-primary after:scale-x-0 hover:after:scale-x-100 
     after:transition-transform after:duration-300 after:origin-center`;
+
+  const mobileMenuLinkStyle = `inline-flex min-h-11 items-center rounded-lg px-3 py-2.5 text-2xl font-medium leading-tight sm:text-3xl
+    text-foreground/80 transition-[color,background-color] duration-300 ease-out
+    hover:bg-muted/55 hover:text-foreground
+    active:bg-muted/70 active:duration-150`;
 
   return (
     <header
@@ -229,7 +235,7 @@ export function Navbar() {
             >
               <Button asChild variant="outline" className="border-foreground bg-background/20 z-20 hover:bg-background/30">
                 <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                  Resume
+                PDF
                   <Download className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -240,9 +246,12 @@ export function Navbar() {
           <div className="md:hidden flex items-center space-x-4 z-[102]">
             <ThemeToggle />
             <button
-              className="focus:outline-none relative"
+              type="button"
+              className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-sm relative min-h-11 min-w-11 flex items-center justify-center"
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              aria-label="Toggle menu"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-navigation"
             >
               <div className="relative w-12 h-8 flex justify-center items-center">
                 {/* Primera línea */}
@@ -266,74 +275,56 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Navigation - Ahora sin duplicar el logo y el toggle theme */}
+      {/* Mobile Navigation */}
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
+            id="mobile-navigation"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="md:hidden fixed top-0 left-0 w-full h-screen bg-background/95 backdrop-blur-md z-[101] flex flex-col pt-24"
-            style={{ position: 'fixed', top: 0, left: 0, right: 0, bottom: 0 }}
+            transition={{ duration: 0.25 }}
+            className="md:hidden fixed inset-0 z-[101] flex flex-col bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/90 overscroll-none"
+            style={{
+              height: "100dvh",
+              paddingTop: "max(5.5rem, calc(env(safe-area-inset-top) + 4rem))",
+              paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
+              paddingLeft: "max(1rem, env(safe-area-inset-left))",
+              paddingRight: "max(1rem, env(safe-area-inset-right))",
+            }}
           >
-            {/* Contenido del menú móvil - sin la barra superior */}
-            <div className="flex-1 flex items-start mt-20 justify-center overflow-auto">
-              <nav className="container mx-auto flex flex-col space-y-2 px-20">
-                <Link
-                  href={getHref("about")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${activeSection === "about" && isHomePage ? "text-primary font-bold" : ""
-                    }`}
-                  onClick={closeMenu}
-                >
-                  About
-                </Link>
-                <Link
-                  href={getHref("experience")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${activeSection === "experience" && isHomePage ? "text-primary font-bold" : ""
-                    }`}
-                  onClick={closeMenu}
-                >
-                  Experience
-                </Link>
-                <Link
-                  href={getHref("projects")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${activeSection === "projects" && isHomePage ? "text-primary font-bold" : ""
-                    }`}
-                  onClick={closeMenu}
-                >
-                  Projects
-                </Link>
-                <Link
-                  href={getHref("contact")}
-                  className={`text-foreground text-xl font-medium relative ${menuLinkStyle} py-3 ${activeSection === "contact" && isHomePage ? "text-primary font-bold" : ""
-                    }`}
-                  onClick={closeMenu}
-                >
-                  Contact
-                </Link>
-              </nav>
-              <div className="flex flex-col gap-2 mr-10">
-                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
-                  <Link
-                    href="https://linkedin.com/in/vladislavtitov"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="LinkedIn"
-                  >
-                    <Linkedin className="w-5 h-5" />
-                  </Link>
-                </Button>
-                <Button asChild className="w-full py-6 text-lg" onClick={closeMenu} variant="link">
-                  <Link
-                    href="https://github.com/vvtitov"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    aria-label="GitHub"
-                  >
-                    <Github className="w-5 h-5" />
-                  </Link>
-                </Button>
+            <div className="flex min-h-0 flex-1 flex-col">
+              <div className="flex min-h-0 flex-1 items-center justify-end overflow-y-auto overscroll-contain touch-pan-y px-4 sm:px-8">
+                <nav className="flex w-full max-w-sm flex-col items-end gap-1 text-right">
+                  {MOBILE_NAV_LINKS.map(({ href, label }) => {
+                    const isActive = activeSection === href && isHomePage
+
+                    return (
+                      <Link
+                        key={href}
+                        href={getHref(href)}
+                        className={`${mobileMenuLinkStyle} ${
+                          isActive ? "bg-muted/40 text-primary font-semibold" : ""
+                        }`}
+                        onClick={closeMenu}
+                      >
+                        {label}
+                      </Link>
+                    )
+                  })}
+                </nav>
+              </div>
+
+              <div className="shrink-0 border-t border-border/50 px-4 pt-5 pb-2">
+                <ContactIconLinks
+                  size="md"
+                  className="justify-center"
+                  onLinkClick={closeMenu}
+                  includeResume
+                />
               </div>
             </div>
           </motion.div>

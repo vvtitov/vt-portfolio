@@ -219,18 +219,6 @@ export default function Home() {
                   open-source projects, or experimenting with new technologies.
                 </p>
               </motion.div>
-
-
-              <div className="flex flex-wrap gap-4 items-center justify-center md:justify-start">
-                <ContactIconLinks size="sm" />
-                <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
-                  <Button variant="outline" size="icon" asChild>
-                    <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="Download Resume">
-                      <Download className="h-5 w-5" />
-                    </Link>
-                  </Button>
-                </motion.div>
-              </div>
             </div>
           </div>
         </div>
@@ -265,6 +253,16 @@ export default function Home() {
 
           <div className="max-w-4xl mx-auto">
             <ExperienceTimeline />
+          </div>
+
+          <div className="mt-12 flex justify-center">
+            <motion.div whileHover={{ y: -5 }} transition={{ type: "spring", stiffness: 400 }}>
+              <Button variant="outline" size="icon" asChild>
+                <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" aria-label="Download Resume">
+                  <Download className="h-5 w-5" />
+                </Link>
+              </Button>
+            </motion.div>
           </div>
 
           {/* Technologies Section (moved to bottom of Experience) */}
@@ -510,7 +508,7 @@ export default function Home() {
                 Built With <span className="text-primary">This Stack</span>
               </h2>
               <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                A quick technical snapshot of the main technologies used to design, build and animate this portfolio.
+                A quick technical snapshot of the main technologies I've used in my portfolio.
               </p>
             </div>
 

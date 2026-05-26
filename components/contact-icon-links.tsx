@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react"
 import Link from "next/link"
-import { Github, Linkedin, Mail } from "lucide-react"
+import { Github, Linkedin, Mail, Download } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { contactEncoded } from "@/lib/contact-encoded"
@@ -24,9 +24,16 @@ function decodeContact(): ContactHref {
 type ContactIconLinksProps = {
   size?: "sm" | "md"
   className?: string
+  onLinkClick?: () => void
+  includeResume?: boolean
 }
 
-export function ContactIconLinks({ size = "md", className = "" }: ContactIconLinksProps) {
+export function ContactIconLinks({
+  size = "md",
+  className = "",
+  onLinkClick,
+  includeResume = false,
+}: ContactIconLinksProps) {
   const [hrefs, setHrefs] = useState<ContactHref | null>(null)
 
   useEffect(() => {
@@ -60,6 +67,7 @@ export function ContactIconLinks({ size = "md", className = "" }: ContactIconLin
             {href ? (
               <Link
                 href={href}
+                onClick={onLinkClick}
                 {...(external
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
@@ -75,6 +83,19 @@ export function ContactIconLinks({ size = "md", className = "" }: ContactIconLin
           </Button>
         )
       })}
+      {includeResume ? (
+        <Button variant="outline" size="icon" className={buttonClass} asChild title="Resume">
+          <Link
+            href="/resume.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={onLinkClick}
+            aria-label="Download resume"
+          >
+            <Download className={iconClass} />
+          </Link>
+        </Button>
+      ) : null}
     </div>
   )
 }
