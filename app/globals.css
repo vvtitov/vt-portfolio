@@ -174,11 +174,18 @@ button {
 }
 
 .hero-viewport {
-  height: 100lvh;
-  min-height: 100lvh;
-  height: -webkit-fill-available;
-  min-height: -webkit-fill-available;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 100vh;
+  min-height: 100dvh;
   isolation: isolate;
+}
+
+@supports (-webkit-touch-callout: none) {
+  .hero-viewport {
+    height: -webkit-fill-available;
+    min-height: -webkit-fill-available;
+  }
 }
 
 .hero-background {
