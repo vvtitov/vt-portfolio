@@ -170,7 +170,7 @@ export default function Home() {
               className="relative h-[500px] w-full rounded-lg overflow-hidden shadow-md"
             >
               <Image
-                src="/vlad.jpeg"
+                src="/vlad.png"
                 alt="Portrait photo"
                 fill
                 priority
