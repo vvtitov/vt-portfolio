@@ -83,6 +83,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth bg-background text-foreground" suppressHydrationWarning>
       <head>
+        <meta name="theme-color" content="#ffffff" id="site-theme-color" />
         <Script src="/theme-detector.js" strategy="beforeInteractive" />
         <link rel="icon" href="/icon.ico" type="image/x-icon" />
       </head>

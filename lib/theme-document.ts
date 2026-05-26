@@ -3,12 +3,12 @@ export type ResolvedTheme = "light" | "dark"
 export const THEME_TOKENS = {
   light: {
     themeColor: "#ffffff",
-    background: "hsl(0 0% 100%)",
+    background: "#ffffff",
     statusBarStyle: "default",
   },
   dark: {
     themeColor: "#09090b",
-    background: "hsl(240 10% 3.9%)",
+    background: "#09090b",
     statusBarStyle: "black-translucent",
   },
 } as const
@@ -26,22 +26,62 @@ function setMeta(name: string, content: string) {
 }
 
 function setThemeColorMeta(color: string) {
+  const existing = document.getElementById("site-theme-color")
+
+  if (existing) {
+    existing.setAttribute("content", color)
+    return
+  }
+
   document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
     meta.remove()
   })
 
   const themeColorMeta = document.createElement("meta")
+  themeColorMeta.setAttribute("id", "site-theme-color")
   themeColorMeta.setAttribute("name", "theme-color")
   themeColorMeta.setAttribute("content", color)
   document.head.appendChild(themeColorMeta)
 }
 
-function forceBrowserThemeRefresh() {
+function isIOSDevice() {
+  if (typeof navigator === "undefined") return false
+
+  return (
+    /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+    (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1)
+  )
+}
+
+function forceSafariChromeRepaint(themeColor: string) {
+  if (!isIOSDevice() || typeof document === "undefined") return
+
+  const overlay = document.createElement("div")
+  overlay.setAttribute("aria-hidden", "true")
+  overlay.style.cssText = [
+    "position:fixed",
+    "inset:0",
+    "z-index:100",
+    `background:${themeColor}`,
+    "pointer-events:none",
+  ].join(";")
+
+  document.body.appendChild(overlay)
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      overlay.remove()
+    })
+  })
+}
+
+function forceDocumentRepaint() {
+  if (typeof window === "undefined") return
+
   void document.documentElement.offsetHeight
 
-  if (typeof window !== "undefined") {
-    window.dispatchEvent(new Event("resize"))
-  }
+  const scrollY = window.scrollY
+  window.scrollTo(0, scrollY)
 }
 
 export function syncThemeDocument(resolved: ResolvedTheme) {
@@ -57,12 +97,13 @@ export function syncThemeDocument(resolved: ResolvedTheme) {
 
   setThemeColorMeta(tokens.themeColor)
   setMeta("apple-mobile-web-app-status-bar-style", tokens.statusBarStyle)
-
-  forceBrowserThemeRefresh()
+  forceDocumentRepaint()
+  forceSafariChromeRepaint(tokens.themeColor)
 
   requestAnimationFrame(() => {
     setThemeColorMeta(tokens.themeColor)
-    forceBrowserThemeRefresh()
+    forceDocumentRepaint()
+    forceSafariChromeRepaint(tokens.themeColor)
   })
 }
 

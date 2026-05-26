@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useLayoutEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { createPortal } from "react-dom"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
@@ -9,9 +9,7 @@ import { Download } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { ContactIconLinks } from "@/components/contact-icon-links"
-import { useThemePreference } from "@/components/theme-provider"
 import { useMenu } from "@/context/menu-context"
-import { syncThemeDocument } from "@/lib/theme-document"
 import Logo from "./logo"
 
 const MOBILE_NAV_LINKS = [
@@ -23,7 +21,6 @@ const MOBILE_NAV_LINKS = [
 
 export function Navbar() {
   const { isMenuOpen, setIsMenuOpen } = useMenu()
-  const { resolvedTheme } = useThemePreference()
   const [isScrolled, setIsScrolled] = useState(false)
   const [isVisible, setIsVisible] = useState(true)
   const [activeSection, setActiveSection] = useState("home")
@@ -36,10 +33,6 @@ export function Navbar() {
   useEffect(() => {
     setIsMounted(true)
   }, [])
-
-  useLayoutEffect(() => {
-    syncThemeDocument(resolvedTheme)
-  }, [resolvedTheme, isMenuOpen])
 
   // Bloquea el scroll al abrir el menú y lo restaura al cerrarlo sin animación.
   useEffect(() => {

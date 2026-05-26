@@ -12,12 +12,12 @@
     resolved === "dark"
       ? {
           themeColor: "#09090b",
-          background: "hsl(240 10% 3.9%)",
+          background: "#09090b",
           statusBarStyle: "black-translucent",
         }
       : {
           themeColor: "#ffffff",
-          background: "hsl(0 0% 100%)",
+          background: "#ffffff",
           statusBarStyle: "default",
         };
 
@@ -31,14 +31,16 @@
     document.body.style.backgroundColor = tokens.background;
   }
 
-  document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
-    meta.remove();
-  });
+  var themeColorMeta = document.getElementById("site-theme-color");
 
-  var themeColorMeta = document.createElement("meta");
-  themeColorMeta.setAttribute("name", "theme-color");
+  if (!themeColorMeta) {
+    themeColorMeta = document.createElement("meta");
+    themeColorMeta.setAttribute("id", "site-theme-color");
+    themeColorMeta.setAttribute("name", "theme-color");
+    document.head.appendChild(themeColorMeta);
+  }
+
   themeColorMeta.setAttribute("content", tokens.themeColor);
-  document.head.appendChild(themeColorMeta);
 
   var statusBarMeta = document.querySelector('meta[name="apple-mobile-web-app-status-bar-style"]');
 

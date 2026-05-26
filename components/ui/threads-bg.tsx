@@ -250,6 +250,10 @@ const Threads: React.FC<ThreadsProps> = ({
       window.addEventListener("resize", resize, { passive: true });
       resize();
 
+      const resizeObserver =
+        typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => resize()) : null;
+      resizeObserver?.observe(container);
+
       let currentMouse = [0.5, 0.5];
       let targetMouse = [0.5, 0.5];
       let heroVisible = true;
@@ -320,6 +324,7 @@ const Threads: React.FC<ThreadsProps> = ({
         intersectionObserver?.disconnect();
         if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
         window.removeEventListener("resize", resize);
+        resizeObserver?.disconnect();
 
         if (shouldEnableMouseInteraction) {
           window.removeEventListener("mousemove", handleMouseMove);

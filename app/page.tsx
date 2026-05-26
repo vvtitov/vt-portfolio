@@ -13,7 +13,6 @@ import { ProjectFilter } from "@/components/project-filter"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { FilteredProjects } from "@/components/filtered-projects"
 import { ProjectsProvider } from "@/context/projects-context"
-import { useHeroHeight } from "@/hooks/use-hero-height"
 import dynamic from "next/dynamic"
 
 const ContactForm = dynamic(() => import("@/components/contact-form").then((mod) => mod.ContactForm))
@@ -63,7 +62,6 @@ const siteStackSections = [
 
 export default function Home() {
   const ref = useRef(null)
-  useHeroHeight()
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
