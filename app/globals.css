@@ -121,12 +121,16 @@
 html {
   scroll-behavior: smooth;
   overflow-x: hidden;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 body {
   overflow-x: hidden;
   position: relative;
   width: 100%;
+  min-height: 100dvh;
+  min-height: -webkit-fill-available;
 }
 
 ::-webkit-scrollbar {
@@ -144,7 +148,7 @@ button {
 }
 
 .navbar-header {
-  z-index: 50;
+  z-index: 110;
 }
 
 body.custom-cursor-enabled,

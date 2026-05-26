@@ -31,6 +31,30 @@ function applyTheme(theme: ThemePreference) {
   root.setAttribute("data-theme", theme)
 }
 
+const THEME_COLORS = {
+  light: "#ffffff",
+  dark: "#09090b",
+} as const
+
+function updateThemeColorMeta(resolved: "light" | "dark") {
+  if (typeof document === "undefined") return
+
+  const color = THEME_COLORS[resolved]
+  const root = document.documentElement
+
+  root.style.colorScheme = resolved
+
+  let themeColorMeta = document.querySelector('meta[name="theme-color"]')
+
+  if (!themeColorMeta) {
+    themeColorMeta = document.createElement("meta")
+    themeColorMeta.setAttribute("name", "theme-color")
+    document.head.appendChild(themeColorMeta)
+  }
+
+  themeColorMeta.setAttribute("content", color)
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemePreference>("system")
   const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
@@ -39,6 +63,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const resolved = preference === "system" ? getSystemTheme() : preference
     setResolvedTheme(resolved)
     applyTheme(preference)
+    updateThemeColorMeta(resolved)
   }, [])
 
   useEffect(() => {

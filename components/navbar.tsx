@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
+import { createPortal } from "react-dom"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { motion, AnimatePresence } from "framer-motion"
@@ -27,6 +28,11 @@ export function Navbar() {
   const scrollPositionRef = useRef(0)
   const pathname = usePathname()
   const isHomePage = pathname === "/"
+  const [isMounted, setIsMounted] = useState(false)
+
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
 
   // Bloquea el scroll al abrir el menú y lo restaura al cerrarlo sin animación.
   useEffect(() => {
@@ -154,8 +160,13 @@ export function Navbar() {
 
   return (
     <header
-      className={`navbar-header fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-background/80 backdrop-blur-md shadow-sm py-3" : "bg-transparent py-4"
-        } ${isVisible && !isMenuOpen ? "translate-y-0" : isMenuOpen ? "translate-y-0" : "-translate-y-full"}`}
+      className={`navbar-header fixed top-0 left-0 right-0 z-[110] transition-all duration-300 ${
+        isMenuOpen
+          ? "bg-background py-4"
+          : isScrolled
+            ? "bg-background/80 backdrop-blur-md shadow-sm py-3"
+            : "bg-transparent py-4"
+      } ${isVisible && !isMenuOpen ? "translate-y-0" : isMenuOpen ? "translate-y-0" : "-translate-y-full"}`}
       style={{ pointerEvents: "auto" }}
     >
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -275,61 +286,67 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile Navigation */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            id="mobile-navigation"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Mobile navigation"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="md:hidden fixed inset-0 z-[101] flex flex-col bg-background/95 backdrop-blur-md supports-[backdrop-filter]:bg-background/90 overscroll-none"
-            style={{
-              height: "100dvh",
-              paddingTop: "max(5.5rem, calc(env(safe-area-inset-top) + 4rem))",
-              paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
-              paddingLeft: "max(1rem, env(safe-area-inset-left))",
-              paddingRight: "max(1rem, env(safe-area-inset-right))",
-            }}
-          >
-            <div className="flex min-h-0 flex-1 flex-col">
-              <div className="flex min-h-0 flex-1 items-center justify-end overflow-y-auto overscroll-contain touch-pan-y px-4 sm:px-8">
-                <nav className="flex w-full max-w-sm flex-col items-end gap-1 text-right">
-                  {MOBILE_NAV_LINKS.map(({ href, label }) => {
-                    const isActive = activeSection === href && isHomePage
+      {/* Mobile Navigation — portal evita que el transform del header limite el fixed en iOS */}
+      {isMounted
+        ? createPortal(
+            <AnimatePresence>
+              {isMenuOpen ? (
+                <motion.div
+                  id="mobile-navigation"
+                  role="dialog"
+                  aria-modal="true"
+                  aria-label="Mobile navigation"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.25 }}
+                  className="md:hidden fixed inset-0 z-[100] flex flex-col bg-background text-foreground overscroll-none"
+                  style={{
+                    height: "100dvh",
+                    minHeight: "-webkit-fill-available",
+                    paddingTop: "max(5.5rem, calc(env(safe-area-inset-top) + 4rem))",
+                    paddingBottom: "max(1rem, env(safe-area-inset-bottom))",
+                    paddingLeft: "max(1rem, env(safe-area-inset-left))",
+                    paddingRight: "max(1rem, env(safe-area-inset-right))",
+                  }}
+                >
+                  <div className="flex min-h-0 flex-1 flex-col">
+                    <div className="flex min-h-0 flex-1 items-center justify-end overflow-y-auto overscroll-contain touch-pan-y px-4 sm:px-8">
+                      <nav className="flex w-full max-w-sm flex-col items-end gap-1 text-right">
+                        {MOBILE_NAV_LINKS.map(({ href, label }) => {
+                          const isActive = activeSection === href && isHomePage
 
-                    return (
-                      <Link
-                        key={href}
-                        href={getHref(href)}
-                        className={`${mobileMenuLinkStyle} ${
-                          isActive ? "bg-muted/40 text-primary font-semibold" : ""
-                        }`}
-                        onClick={closeMenu}
-                      >
-                        {label}
-                      </Link>
-                    )
-                  })}
-                </nav>
-              </div>
+                          return (
+                            <Link
+                              key={href}
+                              href={getHref(href)}
+                              className={`${mobileMenuLinkStyle} ${
+                                isActive ? "bg-muted/40 text-primary font-semibold" : ""
+                              }`}
+                              onClick={closeMenu}
+                            >
+                              {label}
+                            </Link>
+                          )
+                        })}
+                      </nav>
+                    </div>
 
-              <div className="shrink-0 border-t border-border/50 px-4 pt-5 pb-2">
-                <ContactIconLinks
-                  size="md"
-                  className="justify-center"
-                  onLinkClick={closeMenu}
-                  includeResume
-                />
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+                    <div className="shrink-0 border-t border-border/50 px-4 pt-5 pb-2">
+                      <ContactIconLinks
+                        size="md"
+                        className="justify-center"
+                        onLinkClick={closeMenu}
+                        includeResume
+                      />
+                    </div>
+                  </div>
+                </motion.div>
+              ) : null}
+            </AnimatePresence>,
+            document.body,
+          )
+        : null}
     </header>
   )
 }
