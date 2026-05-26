@@ -4,21 +4,20 @@
   var resolved = "light";
 
   if (stored === "dark" || stored === "light") {
-    root.setAttribute("data-theme", stored);
     resolved = stored;
   } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
     resolved = "dark";
   }
 
+  root.setAttribute("data-theme", resolved);
   root.style.colorScheme = resolved;
 
-  var themeColorMeta = document.querySelector('meta[name="theme-color"]');
+  document.querySelectorAll('meta[name="theme-color"]').forEach(function (meta) {
+    meta.remove();
+  });
 
-  if (!themeColorMeta) {
-    themeColorMeta = document.createElement("meta");
-    themeColorMeta.setAttribute("name", "theme-color");
-    document.head.appendChild(themeColorMeta);
-  }
-
+  var themeColorMeta = document.createElement("meta");
+  themeColorMeta.setAttribute("name", "theme-color");
   themeColorMeta.setAttribute("content", resolved === "dark" ? "#09090b" : "#ffffff");
+  document.head.appendChild(themeColorMeta);
 })();

@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react"
+import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useState, type ReactNode } from "react"
 
 export type ThemePreference = "light" | "dark" | "system"
 
@@ -20,15 +20,11 @@ function getSystemTheme(): "light" | "dark" {
   return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
 }
 
-function applyTheme(theme: ThemePreference) {
+function applyTheme(preference: ThemePreference) {
   const root = document.documentElement
+  const resolved = preference === "system" ? getSystemTheme() : preference
 
-  if (theme === "system") {
-    root.removeAttribute("data-theme")
-    return
-  }
-
-  root.setAttribute("data-theme", theme)
+  root.setAttribute("data-theme", resolved)
 }
 
 const THEME_COLORS = {
@@ -44,15 +40,14 @@ function updateThemeColorMeta(resolved: "light" | "dark") {
 
   root.style.colorScheme = resolved
 
-  let themeColorMeta = document.querySelector('meta[name="theme-color"]')
+  document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
+    meta.remove()
+  })
 
-  if (!themeColorMeta) {
-    themeColorMeta = document.createElement("meta")
-    themeColorMeta.setAttribute("name", "theme-color")
-    document.head.appendChild(themeColorMeta)
-  }
-
+  const themeColorMeta = document.createElement("meta")
+  themeColorMeta.setAttribute("name", "theme-color")
   themeColorMeta.setAttribute("content", color)
+  document.head.appendChild(themeColorMeta)
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
@@ -84,6 +79,10 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     mediaQuery.addEventListener("change", handleSystemChange)
     return () => mediaQuery.removeEventListener("change", handleSystemChange)
   }, [syncResolvedTheme])
+
+  useLayoutEffect(() => {
+    updateThemeColorMeta(resolvedTheme)
+  }, [resolvedTheme])
 
   const setTheme = useCallback(
     (preference: ThemePreference) => {

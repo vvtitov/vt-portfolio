@@ -1,8 +1,13 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { Renderer, Program, Mesh, Triangle, Color } from "ogl";
 import { useThemePreference } from "@/components/theme-provider";
+import { useIsMobile } from "@/hooks/use-mobile";
+
+function getThreadsThemeColor(resolvedTheme: "light" | "dark"): [number, number, number] {
+  return resolvedTheme === "dark" ? [1, 1, 1] : [0.1, 0.1, 0.1];
+}
 
 interface ThreadsProps {
   color?: [number, number, number];
@@ -148,7 +153,17 @@ const Threads: React.FC<ThreadsProps> = ({
 }) => {
   const containerRef = useRef<HTMLDivElement>(null);
   const animationFrameId = useRef<number | undefined>(undefined);
+  const programRef = useRef<Program | null>(null);
   const { resolvedTheme } = useThemePreference();
+  const isMobile = useIsMobile();
+  const shouldEnableMouseInteraction = isMobile ? false : enableMouseInteraction;
+
+  useLayoutEffect(() => {
+    if (!programRef.current) return;
+
+    const themeColor = getThreadsThemeColor(resolvedTheme);
+    programRef.current.uniforms.uColor.value = new Color(...themeColor);
+  }, [resolvedTheme]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -199,11 +214,7 @@ const Threads: React.FC<ThreadsProps> = ({
 
       const geometry = new Triangle(gl);
     
-    // Determinar el color basado en el tema
-      const themeColor =
-        resolvedTheme === "dark"
-          ? [1, 1, 1]
-          : [0.1, 0.1, 0.1];
+      const themeColor = getThreadsThemeColor(resolvedTheme);
 
       const program = new Program(gl, {
         vertex: vertexShader,
@@ -223,6 +234,8 @@ const Threads: React.FC<ThreadsProps> = ({
           uMouse: { value: new Float32Array([0.5, 0.5]) },
         },
       });
+
+      programRef.current = program;
 
       const mesh = new Mesh(gl, { geometry, program });
 
@@ -277,42 +290,13 @@ const Threads: React.FC<ThreadsProps> = ({
         targetMouse = [0.5, 0.5];
       }
 
-      function handleTouchMove(e: TouchEvent) {
-        if (e.touches.length === 0) return;
-        const rect = container.getBoundingClientRect();
-        if (!rect.width || !rect.height) return;
-
-        const touch = e.touches[0];
-        const inside =
-          touch.clientX >= rect.left &&
-          touch.clientX <= rect.right &&
-          touch.clientY >= rect.top &&
-          touch.clientY <= rect.bottom;
-
-        if (!inside) {
-          targetMouse = [0.5, 0.5];
-          return;
-        }
-
-        const x = (touch.clientX - rect.left) / rect.width;
-        const y = 1.0 - (touch.clientY - rect.top) / rect.height;
-        targetMouse = [Math.min(1, Math.max(0, x)), Math.min(1, Math.max(0, y))];
-      }
-
-      function handleTouchEnd() {
-        targetMouse = [0.5, 0.5];
-      }
-
-      if (enableMouseInteraction) {
+      if (shouldEnableMouseInteraction) {
         window.addEventListener("mousemove", handleMouseMove, { passive: true });
         document.documentElement.addEventListener("mouseleave", handleMouseLeave);
-        window.addEventListener("touchmove", handleTouchMove, { passive: true });
-        window.addEventListener("touchend", handleTouchEnd);
-        window.addEventListener("touchcancel", handleTouchEnd);
       }
 
       function update(t: number) {
-        if (enableMouseInteraction) {
+        if (shouldEnableMouseInteraction) {
           const smoothing = 0.1;
           currentMouse[0] += smoothing * (targetMouse[0] - currentMouse[0]);
           currentMouse[1] += smoothing * (targetMouse[1] - currentMouse[1]);
@@ -332,16 +316,14 @@ const Threads: React.FC<ThreadsProps> = ({
       animationFrameId.current = requestAnimationFrame(update);
 
       teardown = () => {
+        programRef.current = null;
         intersectionObserver?.disconnect();
         if (animationFrameId.current) cancelAnimationFrame(animationFrameId.current);
         window.removeEventListener("resize", resize);
 
-        if (enableMouseInteraction) {
+        if (shouldEnableMouseInteraction) {
           window.removeEventListener("mousemove", handleMouseMove);
           document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
-          window.removeEventListener("touchmove", handleTouchMove);
-          window.removeEventListener("touchend", handleTouchEnd);
-          window.removeEventListener("touchcancel", handleTouchEnd);
         }
         if (container.contains(gl.canvas as HTMLCanvasElement)) {
           container.removeChild(gl.canvas as HTMLCanvasElement);
@@ -368,7 +350,7 @@ const Threads: React.FC<ThreadsProps> = ({
       }
       teardown?.();
     };
-  }, [color, amplitude, distance, enableMouseInteraction, resolvedTheme]);
+  }, [color, amplitude, distance, enableMouseInteraction, shouldEnableMouseInteraction]);
 
   return (
     <div ref={containerRef} className="pointer-events-none w-full h-full absolute inset-0" {...rest} />

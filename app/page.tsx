@@ -74,13 +74,17 @@ export default function Home() {
       <ScrollToTop />
 
       {/* Hero Section */}
-      <section ref={ref} className="relative h-screen min-h-[600px] flex items-center justify-center overflow-hidden">
-        <motion.div style={{ y, opacity }} className="absolute inset-0 z-0 min-h-full">
-          <Threads enableMouseInteraction={true}/>
+      <section
+        ref={ref}
+        id="home"
+        className="hero-viewport relative flex items-center justify-center overflow-hidden"
+      >
+        <motion.div style={{ y, opacity }} className="absolute inset-0 z-0 size-full">
+          <Threads enableMouseInteraction={true} />
           <div className="absolute inset-0 bg-foreground/10 z-10 pointer-events-none" />
         </motion.div>
 
-        <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="container relative z-10 mx-auto px-4 sm:px-6 lg:px-8 pt-[env(safe-area-inset-top)]">
           <div className="max-w-4xl mx-auto text-center p-4 md:p-10">
             <motion.div initial={{ opacity: 1, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45 }}>
               <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4">
@@ -120,7 +124,7 @@ export default function Home() {
         </div>
 
         <motion.div
-          className="absolute bottom-32 flex mx-auto"
+          className="absolute inset-x-0 bottom-[max(6rem,calc(env(safe-area-inset-bottom)+4rem))] flex justify-center"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 1.5, repeat: Number.POSITIVE_INFINITY }}
         >
