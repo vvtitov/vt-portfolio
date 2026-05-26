@@ -28,7 +28,12 @@ export function ThemeToggle() {
     <Button
       variant="link"
       size="icon"
-      onClick={() => setTheme(isDark ? "light" : "dark")}
+      onClick={() => {
+        const currentTheme =
+          document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"
+
+        setTheme(currentTheme === "dark" ? "light" : "dark")
+      }}
       aria-label="Toggle theme"
       className="opacity-100"
     >

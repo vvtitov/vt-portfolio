@@ -13,6 +13,7 @@ import { ProjectFilter } from "@/components/project-filter"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { FilteredProjects } from "@/components/filtered-projects"
 import { ProjectsProvider } from "@/context/projects-context"
+import { useHeroHeight } from "@/hooks/use-hero-height"
 import dynamic from "next/dynamic"
 
 const ContactForm = dynamic(() => import("@/components/contact-form").then((mod) => mod.ContactForm))
@@ -62,6 +63,7 @@ const siteStackSections = [
 
 export default function Home() {
   const ref = useRef(null)
+  useHeroHeight()
   const { scrollYProgress } = useScroll({
     target: ref,
     offset: ["start start", "end start"],
@@ -77,9 +79,9 @@ export default function Home() {
       <section
         ref={ref}
         id="home"
-        className="hero-viewport relative flex items-center justify-center overflow-hidden"
+        className="hero-viewport relative flex items-center justify-center overflow-hidden bg-background"
       >
-        <motion.div style={{ y, opacity }} className="absolute inset-0 z-0 size-full">
+        <motion.div style={{ y, opacity }} className="hero-background">
           <Threads enableMouseInteraction={true} />
           <div className="absolute inset-0 bg-foreground/10 z-10 pointer-events-none" />
         </motion.div>

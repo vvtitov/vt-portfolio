@@ -1,64 +1,28 @@
 "use client"
 
-import { createContext, useCallback, useContext, useEffect, useLayoutEffect, useState, type ReactNode } from "react"
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from "react"
+import { resolveThemePreference, syncThemeDocument, type ResolvedTheme } from "@/lib/theme-document"
 
 export type ThemePreference = "light" | "dark" | "system"
 
 type ThemeContextValue = {
   theme: ThemePreference
-  resolvedTheme: "light" | "dark"
+  resolvedTheme: ResolvedTheme
   setTheme: (theme: ThemePreference) => void
 }
 
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined)
 
-function getSystemTheme(): "light" | "dark" {
-  if (typeof window === "undefined") {
-    return "light"
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-}
-
-function applyTheme(preference: ThemePreference) {
-  const root = document.documentElement
-  const resolved = preference === "system" ? getSystemTheme() : preference
-
-  root.setAttribute("data-theme", resolved)
-}
-
-const THEME_COLORS = {
-  light: "#ffffff",
-  dark: "#09090b",
-} as const
-
-function updateThemeColorMeta(resolved: "light" | "dark") {
-  if (typeof document === "undefined") return
-
-  const color = THEME_COLORS[resolved]
-  const root = document.documentElement
-
-  root.style.colorScheme = resolved
-
-  document.querySelectorAll('meta[name="theme-color"]').forEach((meta) => {
-    meta.remove()
-  })
-
-  const themeColorMeta = document.createElement("meta")
-  themeColorMeta.setAttribute("name", "theme-color")
-  themeColorMeta.setAttribute("content", color)
-  document.head.appendChild(themeColorMeta)
-}
-
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<ThemePreference>("system")
-  const [resolvedTheme, setResolvedTheme] = useState<"light" | "dark">("light")
+  const [resolvedTheme, setResolvedTheme] = useState<ResolvedTheme>("light")
 
   const syncResolvedTheme = useCallback((preference: ThemePreference) => {
-    const resolved = preference === "system" ? getSystemTheme() : preference
+    const resolved = resolveThemePreference(preference)
+
+    setThemeState(preference)
     setResolvedTheme(resolved)
-    applyTheme(preference)
-    updateThemeColorMeta(resolved)
+    syncThemeDocument(resolved)
   }, [])
 
   useEffect(() => {
@@ -66,7 +30,6 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const preference: ThemePreference =
       stored === "light" || stored === "dark" || stored === "system" ? stored : "system"
 
-    setThemeState(preference)
     syncResolvedTheme(preference)
 
     const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)")
@@ -80,13 +43,8 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return () => mediaQuery.removeEventListener("change", handleSystemChange)
   }, [syncResolvedTheme])
 
-  useLayoutEffect(() => {
-    updateThemeColorMeta(resolvedTheme)
-  }, [resolvedTheme])
-
   const setTheme = useCallback(
     (preference: ThemePreference) => {
-      setThemeState(preference)
       localStorage.setItem("theme", preference)
       syncResolvedTheme(preference)
     },

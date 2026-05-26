@@ -81,7 +81,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" className="scroll-smooth bg-background text-foreground" suppressHydrationWarning>
       <head>
         <Script src="/theme-detector.js" strategy="beforeInteractive" />
         <link rel="icon" href="/icon.ico" type="image/x-icon" />
