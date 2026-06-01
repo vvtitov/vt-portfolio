@@ -113,7 +113,7 @@ export default function Home() {
               <Button asChild size="lg" className="group">
                 <Link href="#projects">
                   Explore My Work
-                  <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 mt-1" />
+                  <ArrowDownRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1 mt-1" />
                 </Link>
               </Button>
               <Button asChild size="lg" variant="outline" className="border-secondary-foreground text-foreground hover:bg-secondary/40 bg-secondary/20">
@@ -155,26 +155,27 @@ export default function Home() {
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5, delay: 0.2 }}
             >
-              <p className="text-muted-foreground mb-2 leading-relaxed px-4 text-left md:text-center">
-                Based in Buenos Aires, Argentina for more than 25 years, my expertise lies in crafting exceptional, functional, and accessible web experiences that delight users.
+              <p className="text-muted-foreground leading-relaxed text-pretty px-4 md:px-0">
+                Based in Buenos Aires, Argentina for more than 25 years, I specialize in building accessible, performant web experiences for clients ranging from startups to agencies.
               </p>
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 items-center px-4">
+          <div className="max-w-5xl mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-[minmax(0,320px)_1fr] gap-12 md:gap-16 lg:gap-20 items-start md:items-center">
             <motion.div
               initial={{ opacity: 0, x: -50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.5 }}
-              className="relative h-[500px] w-full rounded-lg overflow-hidden shadow-md"
+              className="relative mx-auto md:mx-0 h-[380px] w-full max-w-sm md:max-w-[320px] rounded-lg overflow-hidden shadow-md"
             >
               <Image
                 src="/vlad.png"
                 alt="Portrait photo"
                 fill
                 priority
-                sizes="(min-width: 768px) 50vw, 100vw"
+                sizes="(min-width: 768px) 320px, 100vw"
                 className="object-cover"
               />
             </motion.div>
@@ -212,18 +213,19 @@ export default function Home() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.5 }}
               >
-                <p className="text-muted-foreground mb-6 leading-relaxed">
-                  With over 8 years of total experience in software development and customer support, I've worked on a variety of projects
+                <p className="text-muted-foreground mb-6 leading-relaxed text-left text-pretty">
+                  With 6+ years across QA, frontend development, and customer support, I've worked on projects
                   from small business websites to large-scale applications. My approach combines technical expertise
-                  with creative problem-solving to deliver solutions that escalate the business value.
+                  with creative problem-solving to deliver solutions that escalate business value.
                 </p>
-                <p className="text-muted-foreground mb-8 leading-relaxed">
+                <p className="text-muted-foreground mb-8 leading-relaxed text-left text-pretty">
                   I'm passionate about creating accessible, user-friendly interfaces that provide seamless experiences
                   across all devices. When I'm not coding, you can find me exploring new design trends, contributing to
                   open-source projects, or experimenting with new technologies.
                 </p>
               </motion.div>
             </div>
+          </div>
           </div>
         </div>
       </section>
@@ -350,7 +352,7 @@ export default function Home() {
               transition={{ duration: 0.5 }}
             >
               <h2 className="text-3xl md:text-4xl font-bold mb-6 tracking-tight">
-                Client <span className="text-primary">Testimonials</span>
+                Testimonials
               </h2>
             </motion.div>
 

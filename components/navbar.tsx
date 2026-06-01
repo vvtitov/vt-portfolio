@@ -239,18 +239,6 @@ export function Navbar() {
             >
               <ThemeToggle />
             </motion.div>
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-            >
-              <Button asChild variant="outline" className="border-foreground bg-background/20 z-20 hover:bg-background/30">
-                <Link href="/resume.pdf" target="_blank" rel="noopener noreferrer" className="flex items-center">
-                PDF
-                  <Download className="ml-2 h-4 w-4" />
-                </Link>
-              </Button>
-            </motion.div>
           </nav>
 
           {/* Mobile Menu Button y ThemeToggle con z-index alto para que permanezcan visibles */}

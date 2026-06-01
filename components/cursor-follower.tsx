@@ -111,7 +111,7 @@ export function CursorFollower() {
         {ripples.map((ripple) => (
           <motion.span
             key={ripple.id}
-            className="pointer-events-none fixed z-[59] rounded-full border border-primary/50"
+            className="pointer-events-none fixed z-[120] rounded-full border border-primary/50"
             style={{ left: ripple.x, top: ripple.y }}
             initial={{ width: OUTER_SIZE, height: OUTER_SIZE, x: "-50%", y: "-50%", opacity: 0.35 }}
             animate={{ width: OUTER_SIZE * 2.2, height: OUTER_SIZE * 2.2, opacity: 0 }}
@@ -122,7 +122,7 @@ export function CursorFollower() {
       </AnimatePresence>
 
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[60] rounded-full border border-primary/70 bg-primary/5"
+        className="pointer-events-none fixed top-0 left-0 z-[121] rounded-full border border-primary/70 bg-primary/5"
         style={{
           width: OUTER_SIZE,
           height: OUTER_SIZE,
@@ -138,7 +138,7 @@ export function CursorFollower() {
       />
 
       <motion.div
-        className="pointer-events-none fixed top-0 left-0 z-[61] rounded-full bg-primary"
+        className="pointer-events-none fixed top-0 left-0 z-[122] rounded-full bg-primary"
         style={{
           width: INNER_SIZE,
           height: INNER_SIZE,
